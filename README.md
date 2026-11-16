@@ -1,23 +1,23 @@
-# 🎯 StudioFinder İstanbul — Tasarımcı Radarı
+# StudioFinder İstanbul - Tasarımcı Radarı
 
-> **Freelance tasarımcılar ve kreatif ajanslar için İstanbul odaklı canlı müşteri ve iş fırsatı radarı.**  
-> Kurumsal ilanları (LinkedIn, Kariyer.net, Bionluk) ve harita üzerindeki yerel işletmeleri tek bir ekranda analiz edin, tasarım ihtiyaçlarını tespit edin ve saniyeler içinde kişiselleştirilmiş teklifler hazırlayın.
+Freelance çalışanlar ve tasarım ekipleri için İstanbul odaklı müşteri ve iş radarı.
 
----
-
-## ⚡ Neden Tasarımcı Radarı?
-
-Freelance çalışanlar ve tasarımcılar için müşteri bulmak çoğu zaman saatler süren manuel aramalar, LinkedIn taramaları ve portfolyo spam'leme süreçleriyle geçer. **StudioFinder İstanbul**, bu süreci tersine çevirir:
-
-1. **Çok Kanallı Canlı Keşif:** LinkedIn Misafir API, Kariyer.net, Bionluk ve OpenStreetMap üzerinden tekil fırsatları harmanlar.
-2. **Tasarım Odaklı İhtiyaç Analizi:** Her potansiyel müşterinin eksiklerini (menü mizanpajı, kurumsal kimlik, sosyal medya şablonları, mobil UI/UX) otomatik modeller.
-3. **Akıllı Fırsat Puanı (Score 0-100):** Dönüşüm ihtimali en yüksek fırsatları öne çıkarır.
-4. **Tek Tıkla Özel Pitch / Teklif Üretici:** İşletmenin eksiklerine özel, saygılı ve profesyonel soğuk e-posta / Instagram DM metinleri oluşturur.
-5. **Sıfır Dış Bağımlılık (Zero Dependencies):** Ek bir kütüphane (`pip install ...`) kurmanıza gerek yoktur; standart Python 3.8+ ile anında çalışır.
+LinkedIn ilanları ve yerel işletmeleri tek ekranda listeler, tasarım ihtiyaçlarını puanlar ve doğrudan iletişime geçmek için metin taslağı üretir.
 
 ---
 
-## 🛠 Mimari & Teknolojik Altyapı
+## Özellikler
+
+1. **Açık ilanlar ve yerel işletmeler.** LinkedIn iş ilanlarını ve OpenStreetMap üzerindeki yerel mekanları bir arada gösterir.
+2. **Tasarım ihtiyaç puanı.** Menü mizanpajı, kurumsal kimlik, sosyal medya şablonları ve mobil arayüz ihtiyaçlarını inceler, 0-100 arası puanlar.
+3. **Teklif metni taslağı.** İşletmenin eksiklerine göre kişiselleştirilmiş e-posta veya mesaj metni hazırlar.
+4. **12 saatlik döngü ve doğrulama.** Sunucu gece 00:00 ve öğlen 12:00 saatlerinde yeni ilanları kaydeder, kapanan ilanları listeden düşürür.
+5. **Standart kütüphane.** Ek paket yüklemesi gerektirmez, Python 3.8 ve üzeri ile çalışır.
+6. **Vercel ve mobil destek.** Vercel üzerinde sunucusuz çalışır. Android için Capacitor altyapısı hazırdır.
+
+---
+
+## Mimari
 
 ```
                                   ┌─────────────────────────────┐
@@ -28,198 +28,142 @@ Freelance çalışanlar ve tasarımcılar için müşteri bulmak çoğu zaman sa
                                                  │ HTTP / JSON
                                                  ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                      StudioFinder Hardened Backend (server.py)             │
+│                      StudioFinder Backend (server.py)                       │
 │                                                                             │
-│  [Güvenlik Katmanı]                                                         │
+│  [Güvenlik]                                                                 │
 │  ├── Chroot Path Traversal Koruması (os.path.commonpath)                    │
-│  ├── Anti-SSRF & DNS Pinning (Private IP & Whitelist Denetleyicisi)         │
+│  ├── SSRF ve DNS Doğrulaması (Domain Whitelist ve Yerel Ağ Engeli)          │
 │  ├── CSP, X-Frame-Options, X-Content-Type-Options, CORS                     │
-│  └── Girdi Sanitizasyonu & Null-Byte Koruması                               │
+│  └── Girdi Temizleme ve Null-Byte Kontrolü                                  │
 │                                                                             │
-│  [Veri & Önbellek Motoru]                                                   │
-│  ├── ThreadPoolExecutor (Paralel Veri Çekimi)                               │
-│  ├── Memory TTL Cache (5 Dakikalık Akıllı Ön Bellekleme)                    │
-│  └── Fallback & Kürasyon Motoru                                             │
+│  [Veri ve Senkronizasyon]                                                   │
+│  ├── SQLite Veritabanı (data/radar.db)                                      │
+│  ├── 12 Saatlik Otomatik Senkronizasyon (00:00 ve 12:00)                    │
+│  └── Liveness Check (Kapanan ilanları pasife alma)                          │
 └──────────────┬─────────────────────────┬────────────────────────────┬───────┘
                │                         │                            │
                ▼                         ▼                            ▼
-      LinkedIn Misafir API          Bionluk & Kariyer.net      OpenStreetMap (OSM)
+       LinkedIn Misafir API          Bionluk & Kariyer.net      OpenStreetMap (OSM)
 ```
 
 ---
 
-## 📁 Proje Dosya Yapısı
+## Dosya Yapısı
 
 ```bash
 tasarimci-radari/
+├── api/
+│   └── search-real.py        # Vercel Serverless arama uç noktası
 ├── data/
-│   └── leads.json            # Doğrulanmış yerel müşteri ve ilan veritabanı
+│   └── leads.json            # Varsayılan yerel müşteri ve ilan veritabanı
 ├── docs/
-│   └── 2026-11-16-design-radar-spec.md  # Ürün spesifikasyonu ve mimari notlar
+│   └── DESIGN_SPEC_ANTI_SLOP.md # Tasarım manifestosu ve kural şartnamesi
 ├── src/
-│   ├── app.js                # Frontend orkestrasyonu, filtreleme ve arayüz etkileşimleri
-│   └── engine.js             # Fırsat filtreleme, arama ve pitch üretim motoru
+│   ├── app.js                # Arayüz yönetimi ve filtreleme
+│   └── engine.js             # Fırsat filtreleme ve arama motoru
 ├── tests/
-│   ├── conversion-tests/     # UI/UX ve dönüşüm test şablonları
-│   └── test_security_and_api.py  # Otomatik backend güvenlik & API test paketi
-├── BRAND.md                  # Marka kimliği ve tasarım dili rehberi
-├── index.html                # Ana arayüz (Modern, duyarlı, karanlık mod)
-├── manifest.json             # Web App & PWA yapılandırması
-├── requirements.txt          # Bağımlılık tanımı (Standart Kütüphane)
-├── server.py                 # Yüksek güvenlikli multithreaded backend sunucusu
-├── start.bat                 # Windows için tek tıkla başlatma betiği
+│   └── test_security_and_api.py # Güvenlik ve API testleri
+├── BRAND.md                  # Kurumsal kimlik ve tasarım standartları
+├── index.html                # Ana arayüz (Figma / Notion açık tema)
+├── manifest.json             # Web App ve PWA yapılandırması
+├── requirements.txt          # Bağımlılık listesi
+├── server.py                 # SQLite destekli backend sunucusu
+├── start.bat                 # Windows başlatma betiği
+├── vercel.json               # Vercel dağıtım kuralları
 └── README.md                 # Proje dokümantasyonu
 ```
 
 ---
 
-## 🚀 Hızlı Başlangıç (Quick Start)
+## Kurulum ve Çalıştırma
 
-### Gereksinimler
-- Python 3.8 veya üzeri (Ekstra paket gerekmez).
+### 1. Depoyu klonlayın
 
-### 1. Depoyu Klonlayın
 ```bash
-git clone https://github.com/kullaniciadi/tasarimci-radari.git
+git clone https://github.com/kabaoglueness/tasarimci-radari.git
 cd tasarimci-radari
 ```
 
-### 2. Sunucuyu Başlatın
+### 2. Sunucuyu başlatın
+
 **Windows:**
-`start.bat` dosyasına çift tıklayabilir veya terminalden:
+`start.bat` dosyasına çift tıklayın veya terminalde çalıştırın:
+
 ```bash
 python server.py
 ```
 
-Sunucu varsayılan olarak `http://127.0.0.1:8090` adresinde çalışmaya başlar. Tarayıcınızda açıp kullanabilirsiniz.
+Tarayıcınızda `http://localhost:8090` adresini açın.
 
 ---
 
-## ⚙️ Çevresel Değişkenler (Environment Variables)
+## Ortam Değişkenleri
 
-Sunucu 12-Factor standartlarına uygundur ve aşağıdaki çevresel değişkenlerle yapılandırılabilir:
+Sunucu aşağıdaki çevresel değişkenlerle çalışır:
 
 | Değişken | Varsayılan | Açıklama |
 | :--- | :--- | :--- |
-| `PORT` | `8090` | Sunucunun dinleyeceği port numarası |
-| `HOST` | `127.0.0.1` | Bağlanılacak adres (`0.0.0.0` ile dış dünyaya açılabilir) |
-| `CACHE_TTL` | `300` | Arama sonuçlarının saniye cinsinden önbellek geçerlilik süresi |
+| `PORT` | `8090` | Sunucunun dinleyeceği port |
+| `HOST` | `0.0.0.0` | Bağlantı adresi (Yerel ağ ve telefon erişimi için) |
+| `RAPIDAPI_KEY` | Boş | İsteğe bağlı harici ilan API anahtarı |
+| `SERPAPI_KEY` | Boş | İsteğe bağlı Google Jobs API anahtarı |
 
-Örnek (Linux / macOS):
-```bash
-PORT=3000 HOST=0.0.0.0 python3 server.py
-```
-
-Örnek (Windows PowerShell):
-```powershell
-$env:PORT="3000"; python server.py
-```
+Değişkenleri tanımlamak için `.env.example` dosyasını `.env` olarak kopyalayabilirsiniz. `.env` dosyası Git tarafından takip edilmez.
 
 ---
 
-## 🛡️ Güvenlik Sıkılaştırması (Security Hardening)
+## Güvenlik Önlemleri
 
-Açık kaynak olarak yayınlanma standardında geliştirilen `server.py`, aşağıdaki kurumsal güvenlik önlemlerini içerir:
-
-1. **Path Traversal Önleme (LFI Koruması):**
-   - URL-decode ve null-byte kontrolü yapılır.
-   - İstenen dosya yolu `os.path.realpath` ve `os.path.commonpath` ile doğrulanır; kök dizin dışına yapılan herhangi bir kaçış (örn. `../../windows/win.ini`) engellenerek 404 döndürülür.
-   - `server.py`, `start.bat`, `.git`, `.env` gibi hassas sistem dosyalarının statik olarak indirilmesi engellenmiştir.
-2. **SSRF & Open-Proxy Koruması:**
-   - Dış API çağrıları için domain whitelist (`ALLOWED_OUTBOUND_DOMAINS`) uygulanır.
-   - Özel HTTP yönlendirici (`SafeRedirectHandler`), iç ağlara (127.0.0.1, 10.0.0.0/8, 192.168.0.0/16 vb.) ve loopback adreslerine yönlendirme girişimlerini tespit edip iptal eder.
-3. **HTTP Güvenlik Başlıkları:**
-   - `X-Content-Type-Options: nosniff`
-   - `X-Frame-Options: SAMEORIGIN`
-   - `X-XSS-Protection: 1; mode=block`
-   - `Referrer-Policy: strict-origin-when-cross-origin`
-   - `Content-Security-Policy (CSP)`
-   - `Access-Control-Allow-Origin: *` & Güvenli CORS
-4. **Güvenli Hata Yönetimi:**
-   - Sunucu tarafında oluşan hatalarda sistem dosya yolları veya stack trace istemciye sızdırılmaz; standart JSON formatında temiz hata mesajları iletilir.
-5. **Girdi Doğrulama ve Sanitizasyon:**
-   - Arama sorguları kontrol karakterlerinden arındırılır, uzunlukları sınırlandırılır ve XSS enjeksiyon girişimleri filtrelenir.
+- **Path traversal engeli.** Dosya yolları `os.path.commonpath` ile doğrulanır. Kök dizin dışındaki dosya istekleri 404 döner. Sistem ve kaynak kod dosyaları indirmeye kapatılmıştır.
+- **SSRF koruması.** Dış API çağrıları için alan adı listesi (`ALLOWED_OUTBOUND_DOMAINS`) kullanılır. Yerel ağ IP adreslerine yönlendirme yapılmaz.
+- **Güvenlik başlıkları.** Yanıtlara `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN` ve `Content-Security-Policy` eklenir.
+- **Girdi denetimi.** Arama parametreleri uzunluk sınırına tabi tutulur, denetim karakterleri ve HTML etiketleri temizlenir.
 
 ---
 
-## 📡 REST API Uç Noktaları
+## API Uç Noktaları
 
-### 1. Fırsat Arama API
+### 1. Fırsat arama
+
 ```http
 GET /api/search-real?query={arama_kelimesi}
 ```
-**Örnek İstek:**
+
+Örnek istek:
 ```bash
-curl http://127.0.0.1:8090/api/search-real?query=Kafe
-```
-**Örnek Yanıt (200 OK):**
-```json
-[
-  {
-    "id": "li-1-482",
-    "type": "job_listing",
-    "source": "LinkedIn",
-    "name": "Luminara Creative Studio — Grafik Tasarımcısı",
-    "sector": "Tasarım & Kreatif",
-    "location": {
-      "city": "İstanbul",
-      "district": "Kağıthane"
-    },
-    "work_type": "Tam Zamanlı / Hibrit",
-    "need_score": 96,
-    "urgency": "Aktif LinkedIn İlanı",
-    "cover_image": "https://images.unsplash.com/...",
-    "design_flaws": [
-      "Pozisyon: Grafik Tasarımcısı (Luminara Creative Studio)",
-      "Lokasyon: Kağıthane, İstanbul",
-      "Tekil doğrulanmış LinkedIn iş ilanı. Doğrudan başvuruya açık."
-    ],
-    "needed_services": ["Görsel Kimlik", "Kampanya Tasarımı", "Sosyal Medya"],
-    "contact": {
-      "website": "https://tr.linkedin.com/jobs/view/...",
-      "platform": "LinkedIn Tekil İlan",
-      "deadline": "Yeni İlan"
-    },
-    "status": "new",
-    "notes": ""
-  }
-]
+curl http://localhost:8090/api/search-real?query=Kafe
 ```
 
-### 2. Sistem Sağlık Kontrolü (Health Check)
+### 2. Sağlık kontrolü
+
 ```http
 GET /health
 ```
-**Örnek Yanıt (200 OK):**
+
+Yanıt:
 ```json
 {
   "status": "healthy",
   "service": "StudioFinder Radar API",
-  "version": "1.0.0"
+  "version": "2.0.0",
+  "last_sync": "12 ilan tarandı"
 }
 ```
 
 ---
 
-## 🧪 Test Paketi
+## Testler
 
-Backend güvenlik önlemlerini ve API uç noktalarını doğrulamak için hazır bir birim/entegrasyon test paketi bulunur:
+Güvenlik ve API testlerini çalıştırmak için:
 
 ```bash
 python -m unittest tests/test_security_and_api.py
 ```
 
-Test kapsamı:
-- Health check ve durum kodları
-- Statik dosya dağıtımı ve MIME tipleri
-- Path traversal (dizin aşımı) ve URL-encode enjeksiyon denemeleri
-- `server.py` ve gizli dosya indirme korumaları
-- Geçersiz HTTP yöntemlerinin (`POST`, `PUT`) 405 ile reddedilmesi
-- CORS `OPTIONS` preflight işleyicisi
-- XSS prob girdilerinin filtrelenmesi
+11 güvenlik ve uç nokta testi çalıştırılır: path traversal denemeleri, hassas dosya erişimleri, CORS kontrolleri ve girdi temizliği.
 
 ---
 
-## 📄 Lisans
+## Lisans
 
-Bu proje **MIT Lisansı** altında lisanslanmıştır. Dilediğiniz gibi kullanabilir, geliştirebilir ve katkıda bulunabilirsiniz.
+MIT Lisansı ile korunmaktadır.
