@@ -128,6 +128,12 @@
 
     <!-- Sağ: Masaüstü Canlı Sayaç & Mobil Bağlantı Ayarları -->
     <div class="flex shrink-0 items-center gap-2">
+      <!-- Canlı Veri Durum Rozeti -->
+      <div id="live-status-badge" class="flex items-center gap-1 text-[11px] font-semibold px-2 py-1 rounded-lg border border-borderSubtle bg-canvas text-fg-muted">
+        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+        <span id="live-status-text">Demo Modu</span>
+      </div>
+
       <button 
         id="open-settings-btn"
         title="Sunucu / Mobil Bağlantı Ayarları"
@@ -230,29 +236,18 @@
       </div>
 
       <p class="text-xs text-fg-muted leading-relaxed">
-        Mobil APK veya yerel ağdaki cihazınızın bilgisayarınızdaki canlı radara bağlanması için IP adresini girin:
+        Vercel'de canlı LinkedIn iş fırsatlarının kilidini açmak için Vercel panelinde (Settings &gt; Environment Variables) tanımladığınız <strong>STUDIO_SECRET_TOKEN</strong> şifrenizi girin:
       </p>
-
-      <div class="flex flex-col gap-1.5">
-        <label class="text-[11px] font-semibold text-zinc-700">API Sunucu Adresi (İsteğe Bağlı):</label>
-        <input 
-          id="server-url-input" 
-          type="text" 
-          placeholder="Boş bırakın veya http://192.168.1.X:8090"
-          class="w-full bg-canvas border border-borderSubtle rounded-lg px-3 py-2 text-xs text-zinc-900 focus:outline-none focus:border-zinc-400 focus:bg-white transition-all font-mono"
-        />
-        <span class="text-[10px] text-fg-faint">Vercel'de çalışırken boş bırakın. Yerel PC için IP girin.</span>
-      </div>
 
       <div class="flex flex-col gap-1.5">
         <label class="text-[11px] font-semibold text-zinc-700">Özel Canlı Erişim Kodu (Secret Token):</label>
         <input 
           id="secret-token-input" 
           type="password" 
-          placeholder="Sadece size özel gizli şifre"
+          placeholder="Örn: kreatif2026"
           class="w-full bg-canvas border border-borderSubtle rounded-lg px-3 py-2 text-xs text-zinc-900 focus:outline-none focus:border-zinc-400 focus:bg-white transition-all font-mono"
         />
-        <span class="text-[10px] text-fg-faint">Bu kod Vercel'deki canlı verilerin kilidini açar.</span>
+        <span class="text-[10px] text-fg-faint">Bu şifre Vercel ortam değişkeniyle eşleştiğinde canlı LinkedIn motorunu tetikler.</span>
       </div>
 
       <div class="flex items-center gap-2 pt-2 border-t border-borderSubtle">

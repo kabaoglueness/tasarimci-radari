@@ -48,17 +48,40 @@ async function init() {
     const liveRes = await fetch(`${apiBase}/api/search_real?query=Tasarım${tokenParam}`, {
       headers: token ? { 'X-Access-Token': token } : {}
     });
+    const liveAccessStatus = liveRes.headers.get('X-Live-Access');
+    const badge = document.getElementById('live-status-badge');
+
+    if (badge) {
+      if (liveAccessStatus === 'Granted') {
+        badge.className = 'flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-lg border border-emerald-300 bg-emerald-50 text-emerald-800';
+        badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span><span>Canlı Veri Aktif</span>';
+      } else if (token) {
+        badge.className = 'flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-lg border border-rose-300 bg-rose-50 text-rose-800';
+        badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span><span>Geçersiz Token</span>';
+      } else {
+        badge.className = 'flex items-center gap-1.5 text-[11px] font-semibold px-2 py-1 rounded-lg border border-borderSubtle bg-canvas text-fg-muted';
+        badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-zinc-400"></span><span>Demo Modu</span>';
+      }
+    }
+
     if (liveRes.ok) {
       const liveData = await liveRes.json();
       if (Array.isArray(liveData) && liveData.length > 0) {
-        const existingIds = new Set(engine.leads.map(l => l.id));
-        const unique = liveData.filter(l => !existingIds.has(l.id));
-        if (unique.length > 0) {
-          engine.leads = [...unique, ...engine.leads];
-          engine.saveToStorage();
-          populateSectorOptions();
-          render();
+        if (liveAccessStatus === 'Granted') {
+          // Canlı ilanları en üste al
+          const liveIds = new Set(liveData.map(l => l.id));
+          const others = engine.leads.filter(l => !liveIds.has(l.id));
+          engine.leads = [...liveData, ...others];
+        } else {
+          const existingIds = new Set(engine.leads.map(l => l.id));
+          const unique = liveData.filter(l => !existingIds.has(l.id));
+          if (unique.length > 0) {
+            engine.leads = [...unique, ...engine.leads];
+          }
         }
+        engine.saveToStorage();
+        populateSectorOptions();
+        render();
       }
     }
   } catch (e) {
