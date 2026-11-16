@@ -190,21 +190,19 @@ class TestStudioRadarBackend(unittest.TestCase):
                 row = cursor.fetchone()
                 self.assertIn(row[0].lower(), ["wal", "memory"])
 
-    def test_16_android_and_capacitor_security(self):
-        """Android Manifest ve Capacitor konfigürasyonunda cleartext/backup sıkılaştırmasını doğrular."""
-        import json
+    def test_16_search_real_static_root_resolution(self):
+        """api/search_real.py handler'ının kök dizinde index.html'i başarıyla çözümlediğini doğrular."""
+        import importlib.util
         import os
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        cap_path = os.path.join(base_dir, "capacitor.config.json")
-        with open(cap_path, "r", encoding="utf-8") as f:
-            cap_cfg = json.load(f)
-        self.assertFalse(cap_cfg.get("server", {}).get("cleartext", True))
-
-        manifest_path = os.path.join(base_dir, "android", "app", "src", "main", "AndroidManifest.xml")
-        with open(manifest_path, "r", encoding="utf-8") as f:
-            manifest_content = f.read()
-        self.assertIn('android:allowBackup="false"', manifest_content)
-        self.assertIn('android:usesCleartextTraffic="false"', manifest_content)
+        api_path = os.path.join(base_dir, "api", "search_real.py")
+        spec = importlib.util.spec_from_file_location("search_real", api_path)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        resolved = mod.resolve_safe_static_path("/")
+        self.assertIsNotNone(resolved)
+        self.assertTrue(resolved.endswith("index.html"))
+        self.assertTrue(os.path.isfile(resolved))
 
     def test_17_pii_anonymized_in_leads_json(self):
         """data/leads.json içerisinde açık telefon ve şahsi e-posta olmadığını doğrular."""

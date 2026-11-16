@@ -21,16 +21,11 @@ export class LeadEngine {
   }
 
   getServerUrl() {
-    // Mobil APK için: Yerel ağdaki API adresi (varsayılan: göreceli veya localhost)
     try {
       const saved = localStorage.getItem(this.serverUrlKey);
       if (saved && saved.trim()) return saved.trim().replace(/\/+$/, '');
     } catch (e) {}
-    // Eğer tarayıcıda ise aynı origin, mobilde ise varsayılan boş (fallback)
-    if (typeof window !== 'undefined' && window.location.origin && !window.location.origin.includes('capacitor://') && !window.location.origin.includes('file://')) {
-      return '';
-    }
-    return 'http://10.0.2.2:8090'; // Android Emulator varsayılanı veya yerel Wi-Fi
+    return '';
   }
 
   setServerUrl(url) {
