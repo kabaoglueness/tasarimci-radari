@@ -1,10 +1,10 @@
 """
-Vercel Serverless Function — StudioFinder Canlı Arama Endpoint'i
------------------------------------------------------------------
+Vercel Serverless Function — StudioFinder Fullstack Entrypoint & API
+---------------------------------------------------------------------
 Vercel üzerinde sunucusuz (serverless) çalışır.
 Bilgisayarın kapalıyken bile çalışır.
-Eğer istekte veya Vercel panelinde SECRET_ACCESS_TOKEN eşleşirse CANLI LinkedIn verisi çeker.
-Eşleşmezse GitHub için güvenli kurumsal placeholder verileri sunar.
+Kök yolda ("/") ve statik yollarda index.html ve web bileşenlerini sunar.
+"/api/*" uç noktalarında ise canlı LinkedIn veya güvenli placeholder verilerini döner.
 """
 
 from http.server import BaseHTTPRequestHandler
@@ -17,6 +17,34 @@ import urllib.request
 
 # Vercel Panelinden tanımlanacak gizli anahtar (Varsayılan yoksa yetkisiz sayılır)
 SECRET_ACCESS_TOKEN = os.environ.get("STUDIO_SECRET_TOKEN")
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+MIME_TYPES = {
+    ".html": "text/html; charset=utf-8",
+    ".js": "application/javascript; charset=utf-8",
+    ".mjs": "application/javascript; charset=utf-8",
+    ".css": "text/css; charset=utf-8",
+    ".json": "application/json; charset=utf-8",
+    ".svg": "image/svg+xml",
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".ico": "image/x-icon",
+    ".txt": "text/plain; charset=utf-8"
+}
+
+def resolve_safe_static_path(url_path: str):
+    clean_path = url_path.split('?')[0].lstrip('/')
+    if not clean_path or clean_path == "index.html":
+        clean_path = "index.html"
+    target = os.path.abspath(os.path.join(BASE_DIR, clean_path))
+    # Path traversal denetimi
+    if not target.startswith(BASE_DIR):
+        return None
+    if os.path.isfile(target):
+        return target
+    return None
 
 PLACEHOLDER_LEADS = [
     {
@@ -153,38 +181,64 @@ class handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         parsed = urllib.parse.urlparse(self.path)
-        params = urllib.parse.parse_qs(parsed.query)
+        req_path = parsed.path
 
-        # Kullanıcının girdiği gizli token kontrolü
-        # Authorization: Bearer <token>, X-Access-Token header veya query param ?token= desteklenir
-        user_token = ""
-        auth_header = self.headers.get('Authorization', '')
-        if auth_header.startswith('Bearer '):
-            user_token = auth_header[7:].strip()
-        if not user_token:
-            user_token = self.headers.get('X-Access-Token', '').strip()
-        if not user_token:
-            user_token = params.get('token', [''])[0].strip()
+        # 1. API İstekleri (/api/*)
+        if req_path.startswith('/api'):
+            params = urllib.parse.parse_qs(parsed.query)
 
-        # Eğer token doğruysa CANLI verileri çek ve ver, değilse güvenli placeholder dön
-        # Timing attack koruması için hmac.compare_digest kullanılır
-        is_live = False
-        secret_token = os.environ.get("STUDIO_SECRET_TOKEN") or SECRET_ACCESS_TOKEN
-        if secret_token and user_token:
-            if hmac.compare_digest(user_token.encode('utf-8'), secret_token.encode('utf-8')):
-                is_live = True
+            # Kullanıcının girdiği gizli token kontrolü
+            user_token = ""
+            auth_header = self.headers.get('Authorization', '')
+            if auth_header.startswith('Bearer '):
+                user_token = auth_header[7:].strip()
+            if not user_token:
+                user_token = self.headers.get('X-Access-Token', '').strip()
+            if not user_token:
+                user_token = params.get('token', [''])[0].strip()
 
-        if is_live:
-            live_jobs = fetch_live_linkedin()
-            data = live_jobs if live_jobs else list(PLACEHOLDER_LEADS)
-        else:
-            data = list(PLACEHOLDER_LEADS)
+            is_live = False
+            secret_token = os.environ.get("STUDIO_SECRET_TOKEN") or SECRET_ACCESS_TOKEN
+            if secret_token and user_token:
+                if hmac.compare_digest(user_token.encode('utf-8'), secret_token.encode('utf-8')):
+                    is_live = True
 
-        payload = json.dumps(data, ensure_ascii=False).encode('utf-8')
-        self.send_response(200)
-        self.send_header('Content-Type', 'application/json; charset=utf-8')
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('X-Live-Access', 'Granted' if is_live else 'Denied-Placeholder')
-        self.send_header('Content-Length', str(len(payload)))
+            if is_live:
+                live_jobs = fetch_live_linkedin()
+                data = live_jobs if live_jobs else list(PLACEHOLDER_LEADS)
+            else:
+                data = list(PLACEHOLDER_LEADS)
+
+            payload = json.dumps(data, ensure_ascii=False).encode('utf-8')
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('X-Live-Access', 'Granted' if is_live else 'Denied-Placeholder')
+            self.send_header('Content-Length', str(len(payload)))
+            self.end_headers()
+            self.wfile.write(payload)
+            return
+
+        # 2. Statik Dosyalar (index.html, src/*, favicon.svg vb.)
+        file_path = resolve_safe_static_path(req_path)
+        if file_path and os.path.isfile(file_path):
+            _, ext = os.path.splitext(file_path)
+            content_type = MIME_TYPES.get(ext.lower(), 'application/octet-stream')
+            try:
+                with open(file_path, 'rb') as f:
+                    content = f.read()
+                self.send_response(200)
+                self.send_header('Content-Type', content_type)
+                self.send_header('Content-Length', str(len(content)))
+                self.send_header('X-Content-Type-Options', 'nosniff')
+                self.end_headers()
+                self.wfile.write(content)
+                return
+            except Exception:
+                pass
+
+        # 3. Bulunamayan dosya
+        self.send_response(404)
+        self.send_header('Content-Type', 'text/plain; charset=utf-8')
         self.end_headers()
-        self.wfile.write(payload)
+        self.wfile.write(b"404 Not Found")
