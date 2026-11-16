@@ -1,6 +1,0 @@
-[project]
-name = "tasarimci-radari"
-version = "1.0.0"
-
-[tool.vercel]
-entrypoint = "api.search-real:handler"

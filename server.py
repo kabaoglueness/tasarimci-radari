@@ -723,7 +723,7 @@ class HardenedStudioHandler(http.server.BaseHTTPRequestHandler):
             req_path = parsed.path
 
             # 1. API: Yerel Veritabanından Anında Yanıt Veren Arama
-            if req_path == "/api/search-real":
+            if req_path in ("/api/search-real", "/api/search_real"):
                 self.handle_api_search(parsed.query, body=body)
                 return
 

@@ -45,7 +45,7 @@ async function init() {
     const apiBase = engine.getServerUrl();
     const token = engine.getSecretToken();
     const tokenParam = token ? `&token=${encodeURIComponent(token)}` : '';
-    const liveRes = await fetch(`${apiBase}/api/search-real?query=Tasarım${tokenParam}`, {
+    const liveRes = await fetch(`${apiBase}/api/search_real?query=Tasarım${tokenParam}`, {
       headers: token ? { 'X-Access-Token': token } : {}
     });
     if (liveRes.ok) {
@@ -94,7 +94,7 @@ function setupEventListeners() {
         const query = searchInput.value.trim();
         try {
           const apiBase = engine.getServerUrl();
-          const res = await fetch(`${apiBase}/api/search-real?city=İstanbul&query=${encodeURIComponent(query)}`);
+          const res = await fetch(`${apiBase}/api/search_real?city=İstanbul&query=${encodeURIComponent(query)}`);
           const newLeads = await res.json();
           if (Array.isArray(newLeads) && newLeads.length > 0) {
             const existingIds = new Set(engine.leads.map(l => l.id));

@@ -151,11 +151,11 @@ class TestStudioRadarBackend(unittest.TestCase):
         conn.close()
 
     def test_13_no_hardcoded_secret_token(self):
-        """api/search-real.py içinde hardcoded master token olmadığını doğrular."""
+        """api/search_real.py içinde hardcoded master token olmadığını doğrular."""
         import importlib.util
         import os
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        api_path = os.path.join(base_dir, "api", "search-real.py")
+        api_path = os.path.join(base_dir, "api", "search_real.py")
         with open(api_path, "r", encoding="utf-8") as f:
             code = f.read()
         self.assertNotIn("sf_master_secret_2026", code)
@@ -167,7 +167,17 @@ class TestStudioRadarBackend(unittest.TestCase):
         if "STUDIO_SECRET_TOKEN" not in os.environ:
             self.assertIsNone(mod.SECRET_ACCESS_TOKEN)
 
-    def test_14_sqlite_wal_mode(self):
+    def test_14_api_search_underscore_endpoint(self):
+        """Sunucunun hem /api/search-real hem de /api/search_real rotasını desteklediğini doğrular."""
+        conn = self.get_connection()
+        conn.request("GET", "/api/search_real?query=Kafe")
+        res = conn.getresponse()
+        self.assertEqual(res.status, 200)
+        data = json.loads(res.read().decode('utf-8'))
+        self.assertIsInstance(data, list)
+        conn.close()
+
+    def test_15_sqlite_wal_mode(self):
         """SQLite veritabanının WAL modunda olduğunu doğrular."""
         import os
         import sqlite3
@@ -180,7 +190,7 @@ class TestStudioRadarBackend(unittest.TestCase):
                 row = cursor.fetchone()
                 self.assertIn(row[0].lower(), ["wal", "memory"])
 
-    def test_15_android_and_capacitor_security(self):
+    def test_16_android_and_capacitor_security(self):
         """Android Manifest ve Capacitor konfigürasyonunda cleartext/backup sıkılaştırmasını doğrular."""
         import json
         import os
@@ -196,7 +206,7 @@ class TestStudioRadarBackend(unittest.TestCase):
         self.assertIn('android:allowBackup="false"', manifest_content)
         self.assertIn('android:usesCleartextTraffic="false"', manifest_content)
 
-    def test_16_pii_anonymized_in_leads_json(self):
+    def test_17_pii_anonymized_in_leads_json(self):
         """data/leads.json içerisinde açık telefon ve şahsi e-posta olmadığını doğrular."""
         import os
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
