@@ -1,0 +1,7 @@
+# StudioFinder İstanbul — Tasarımcı Radarı
+# Bu proje Python Standart Kütüphanesi ile sıfır dış bağımlılıkla çalışacak şekilde tasarlanmıştır.
+# Çekirdek sunucu (server.py) için ek bir 'pip install' gerekmez (Python 3.8+ yeterlidir).
+
+# İsteğe bağlı geliştirici ve test araçları:
+# pytest>=7.4.0
+# flake8>=6.1.0

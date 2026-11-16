@@ -1,0 +1,25 @@
+{
+  "name": "tasarimci-radari",
+  "version": "1.0.0",
+  "description": "> **Freelance tasarımcılar ve kreatif ajanslar için İstanbul odaklı canlı müşteri ve iş fırsatı radarı.**   > Kurumsal ilanları (LinkedIn, Kariyer.net, Bionluk) ve harita üzerindeki yerel işletmeleri tek bir ekranda analiz edin, tasarım ihtiyaçlarını tespit edin ve saniyeler içinde kişiselleştirilmiş teklifler hazırlayın.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "build": "node -e \"const fs=require('fs'); fs.mkdirSync('dist',{recursive:true}); ['index.html','favicon.svg','manifest.json'].forEach(f=>fs.copyFileSync(f,'dist/'+f)); fs.cpSync('src','dist/src',{recursive:true}); fs.cpSync('data','dist/data',{recursive:true});\" && npx cap copy",
+    "cap:sync": "npm run build && npx cap sync",
+    "cap:open": "npx cap open android",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@capacitor/android": "^8.6.2",
+    "@capacitor/cli": "^8.6.2",
+    "@capacitor/core": "^8.6.2"
+  }
+}

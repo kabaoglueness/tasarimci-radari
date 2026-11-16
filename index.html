@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="tr" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudioFinder — Tasarımcı Müşteri & İlan Radarı</title>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+  <meta name="theme-color" content="#ffffff">
+  
+  <!-- Yalnızca Modern Sans-Serif: Inter (Sıfır Tırnak, Saf Tipografi) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            canvas: '#f9fafb',        // Notion/Figma süt beyazı / hafif nötr zemin
+            canvasSubtle: '#f3f4f6',  // Ayrıştırıcı hafif gri tonlar
+            panel: '#ffffff',         // Saf beyaz stüdyo kartı / panel
+            panelHover: '#f8fafc',
+            borderSubtle: '#e5e7eb',  // Zarif hairline border
+            borderStrong: '#d1d5db',  // Kontrastlı sınır
+            fg: {
+              main: '#111827',        // Koyu siyah/antrasit ana metin
+              muted: '#4b5563',       // Okunaklı ikincil metin
+              faint: '#6b7280'        // Yardımcı etiket metni
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+            mono: ['Inter', '-apple-system', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Global font: Her yerde saf, modern, tırnaksız Inter */
+    * {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    }
+
+    /* İnce kaydırma çubuğu (Açık tema) */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+
+    .tabular-data { font-variant-numeric: tabular-nums; }
+
+    /* Fırsat Kartı (Figma Community Studio Light) */
+    .conversion-card {
+      background-color: #ffffff;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.02);
+      transition: transform 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+    }
+    .conversion-card:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
+    }
+    .conversion-card-selected {
+      border-color: #111827 !important;
+      background-color: #ffffff !important;
+      box-shadow: 0 0 0 1.5px #111827, 0 10px 20px -3px rgba(0, 0, 0, 0.08) !important;
+    }
+
+    /* Kaynak Sekmesi Aktif Durumu */
+    .source-tab-btn-active {
+      background-color: #111827 !important;
+      color: #ffffff !important;
+      border-color: #111827 !important;
+      font-weight: 600 !important;
+    }
+
+    /* Yatay kaydırma çubuğunu gizleme */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-canvas text-fg-main font-sans antialiased h-screen overflow-hidden flex flex-col select-none">
+
+  <!-- ÜST GEZİNTİ ÇUBUĞU (Mobil Uyumlu, Asla Kırpılmayan Header) -->
+  <header class="border-b border-borderSubtle px-4 sm:px-6 py-2.5 sm:py-0 sm:h-14 flex flex-col sm:flex-row sm:items-center justify-between bg-panel shrink-0 z-30 gap-2.5 sm:gap-4 shadow-sm">
+    
+    <!-- Üst Satır: Logo, Marka ve Canlı Sayaç (Mobilde yan yana, asla kaybolmaz) -->
+    <div class="flex items-center justify-between sm:justify-start gap-3 shrink-0">
+      <div class="flex items-center gap-2.5">
+        <div class="w-7 h-7 rounded-md bg-zinc-900 border border-zinc-950 text-white flex items-center justify-center font-bold text-xs tracking-tight shadow-sm">
+          SF
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="font-bold text-sm tracking-tight text-zinc-900">StudioFinder</span>
+          <span class="text-[10px] text-zinc-600 bg-canvasSubtle border border-borderSubtle px-1.5 py-0.5 rounded font-semibold">v2.0</span>
+          <span class="hidden md:inline-block text-[11px] text-fg-faint">İstanbul Radarı</span>
+        </div>
+      </div>
+
+      <!-- Canlı Hedef Sayacı (Mobilde de sağ üstte daima görünür) -->
+      <div class="flex sm:hidden items-center gap-1.5 px-2.5 py-1 rounded-lg border border-borderSubtle bg-canvas text-xs font-semibold tabular-data text-fg-muted shrink-0">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="text-zinc-900 font-bold" id="mobile-count-stats">0</span>
+        <span>Hedef</span>
+      </div>
+    </div>
+
+    <!-- Orta: Arama Girişi (Mobilde tam genişlik, masaüstünde ortada) -->
+    <div class="w-full sm:flex-1 sm:max-w-md relative">
+      <div class="relative flex items-center w-full">
+        <span class="absolute left-3 text-fg-faint pointer-events-none">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        </span>
+        <input 
+          id="search-input" 
+          type="text" 
+          placeholder="İşletme, şirket veya ilçe ara... (Kadıköy, Beşiktaş)"
+          class="w-full bg-canvas border border-borderSubtle rounded-lg pl-9 pr-8 py-1.5 text-xs text-fg-main placeholder-fg-faint focus:outline-none focus:bg-white focus:border-zinc-400 focus:ring-1 focus:ring-zinc-400 transition-all font-sans"
+        />
+        <span class="absolute right-2.5 text-[10px] text-fg-faint bg-white border border-borderSubtle px-1 rounded pointer-events-none font-semibold">/</span>
+      </div>
+    </div>
+
+    <!-- Sağ: Masaüstü Canlı Sayaç & Mobil Bağlantı Ayarları -->
+    <div class="flex shrink-0 items-center gap-2">
+      <button 
+        id="open-settings-btn"
+        title="Sunucu / Mobil Bağlantı Ayarları"
+        class="p-1.5 rounded-lg border border-borderSubtle bg-canvas hover:bg-canvasSubtle text-fg-muted hover:text-zinc-900 transition-all text-xs flex items-center gap-1 font-medium"
+      >
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+        <span class="hidden md:inline">Bağlantı</span>
+      </button>
+
+      <div class="hidden sm:flex items-center gap-2 px-3 py-1 rounded-lg border border-borderSubtle bg-canvas text-xs font-semibold tabular-data text-fg-muted">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="text-zinc-900 font-bold" id="header-count-stats">0</span>
+        <span>Aktif Hedef</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- PLATFORM VE KAYNAK SEÇİCİ BANT (Kaymayan Temiz Segment Çubuğu) -->
+  <div class="border-b border-borderSubtle bg-white px-4 sm:px-6 py-2 shrink-0 flex items-center justify-between gap-3 overflow-x-auto no-scrollbar">
+    <div class="flex items-center gap-1.5 shrink-0" id="source-filter-group">
+      <button data-source="all" class="source-filter-btn source-tab-btn-active px-3 py-1 rounded-md text-xs font-semibold border border-zinc-900 transition-all flex items-center gap-1.5 shadow-sm">
+        <span>Tüm Kaynaklar</span>
+        <span class="text-[10px] opacity-90 tabular-data font-medium" id="badge-source-all">0</span>
+      </button>
+      <button data-source="LinkedIn" class="source-filter-btn px-3 py-1 rounded-md text-xs font-medium text-fg-muted hover:text-zinc-900 bg-canvas hover:bg-canvasSubtle border border-borderSubtle transition-all flex items-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-sky-500"></span>
+        <span>LinkedIn</span>
+        <span class="text-[10px] text-fg-faint tabular-data font-medium" id="badge-source-linkedin">0</span>
+      </button>
+      <button data-source="Kariyer.net" class="source-filter-btn px-3 py-1 rounded-md text-xs font-medium text-fg-muted hover:text-zinc-900 bg-canvas hover:bg-canvasSubtle border border-borderSubtle transition-all flex items-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
+        <span>Kariyer.net</span>
+        <span class="text-[10px] text-fg-faint tabular-data font-medium" id="badge-source-kariyernet">0</span>
+      </button>
+      <button data-source="Bionluk" class="source-filter-btn px-3 py-1 rounded-md text-xs font-medium text-fg-muted hover:text-zinc-900 bg-canvas hover:bg-canvasSubtle border border-borderSubtle transition-all flex items-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+        <span>Bionluk Talepleri</span>
+        <span class="text-[10px] text-fg-faint tabular-data font-medium" id="badge-source-bionluk">0</span>
+      </button>
+      <button data-source="Harita" class="source-filter-btn px-3 py-1 rounded-md text-xs font-medium text-fg-muted hover:text-zinc-900 bg-canvas hover:bg-canvasSubtle border border-borderSubtle transition-all flex items-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+        <span>Yerel İşletmeler</span>
+        <span class="text-[10px] text-fg-faint tabular-data font-medium" id="badge-source-harita">0</span>
+      </button>
+    </div>
+
+    <!-- Sıralama Dropdown -->
+    <div class="hidden sm:flex items-center gap-2 text-xs shrink-0">
+      <span class="text-fg-faint text-[11px] font-medium">Sırala:</span>
+      <select id="sort-select" class="bg-white border border-borderSubtle rounded-md px-2 py-1 text-xs text-fg-muted focus:outline-none focus:border-zinc-400 font-medium cursor-pointer">
+        <option value="need_score">En Yüksek İhtiyaç Skoru</option>
+        <option value="name">Alfabetik İsim</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- ANA DÖNÜŞÜM ALANI (Split-Screen Master-Detail) -->
+  <div class="flex-1 flex overflow-hidden relative">
+
+    <!-- SOL SÜTUN: FIRSAT AKIŞI -->
+    <section class="flex-1 w-full lg:w-7/12 border-r border-borderSubtle flex flex-col overflow-hidden bg-canvas">
+      
+      <!-- İkincil Filtre Barı (Hedef Türü + Sektör) -->
+      <div class="px-4 py-2 border-b border-borderSubtle flex items-center justify-between gap-3 bg-white/60 backdrop-blur-sm shrink-0">
+        <div class="flex items-center gap-1" id="type-filter-group">
+          <button data-type="all" class="filter-type-btn text-[11px] px-2.5 py-1 rounded border border-zinc-900 bg-zinc-900 text-white font-medium shadow-xs">Tüm Hedefler</button>
+          <button data-type="job_listing" class="filter-type-btn text-[11px] px-2.5 py-1 rounded border border-borderSubtle bg-white text-fg-muted hover:text-zinc-900 font-medium">Açık İlanlar</button>
+          <button data-type="opportunity" class="filter-type-btn text-[11px] px-2.5 py-1 rounded border border-borderSubtle bg-white text-fg-muted hover:text-zinc-900 font-medium">Müşteri Fırsatları</button>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <select id="sector-select" class="bg-white border border-borderSubtle rounded px-2 py-1 text-[11px] text-fg-muted focus:outline-none focus:border-zinc-400 max-w-[140px] font-medium cursor-pointer">
+            <option value="all">Tüm Sektörler</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Fırsat Kartları Listesi -->
+      <div id="leads-grid" class="flex-1 overflow-y-auto p-3 sm:p-4 flex flex-col gap-2.5">
+        <!-- Dinamik Kartlar JS Tarafından Basılır -->
+      </div>
+    </section>
+
+    <!-- SAĞ SÜTUN: DÖNÜŞÜM & AKSİYON KOKPİTİ -->
+    <aside id="detail-panel" class="hidden lg:flex w-full lg:w-5/12 bg-white flex-col overflow-y-auto shrink-0 z-20">
+      <!-- Dinamik Detay Paneli JS Tarafından Basılır -->
+    </aside>
+
+  </div>
+
+  <!-- SUNUCU & MOBİL BAĞLANTI AYARLARI MODALI (GitHub Sürümünde Güvenli Yerel Bağlantı) -->
+  <div id="settings-modal" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs hidden items-center justify-center p-4">
+    <div class="bg-white border border-borderSubtle rounded-2xl shadow-xl w-full max-w-sm p-5 flex flex-col gap-4 animate-in fade-in zoom-in-95 duration-150">
+      <div class="flex items-center justify-between border-b border-borderSubtle pb-3">
+        <div class="flex items-center gap-2">
+          <div class="w-6 h-6 rounded bg-zinc-900 text-white flex items-center justify-center text-xs font-bold">API</div>
+          <h3 class="font-bold text-sm text-zinc-900">Bağlantı Ayarları</h3>
+        </div>
+        <button id="close-settings-btn" class="text-fg-faint hover:text-zinc-900 text-sm font-semibold p-1">✕</button>
+      </div>
+
+      <p class="text-xs text-fg-muted leading-relaxed">
+        Mobil APK veya yerel ağdaki cihazınızın bilgisayarınızdaki canlı radara bağlanması için IP adresini girin:
+      </p>
+
+      <div class="flex flex-col gap-1.5">
+        <label class="text-[11px] font-semibold text-zinc-700">API Sunucu Adresi (İsteğe Bağlı):</label>
+        <input 
+          id="server-url-input" 
+          type="text" 
+          placeholder="Boş bırakın veya http://192.168.1.X:8090"
+          class="w-full bg-canvas border border-borderSubtle rounded-lg px-3 py-2 text-xs text-zinc-900 focus:outline-none focus:border-zinc-400 focus:bg-white transition-all font-mono"
+        />
+        <span class="text-[10px] text-fg-faint">Vercel'de çalışırken boş bırakın. Yerel PC için IP girin.</span>
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label class="text-[11px] font-semibold text-zinc-700">Özel Canlı Erişim Kodu (Secret Token):</label>
+        <input 
+          id="secret-token-input" 
+          type="password" 
+          placeholder="Sadece size özel gizli şifre"
+          class="w-full bg-canvas border border-borderSubtle rounded-lg px-3 py-2 text-xs text-zinc-900 focus:outline-none focus:border-zinc-400 focus:bg-white transition-all font-mono"
+        />
+        <span class="text-[10px] text-fg-faint">Bu kod Vercel'deki canlı verilerin kilidini açar.</span>
+      </div>
+
+      <div class="flex items-center gap-2 pt-2 border-t border-borderSubtle">
+        <button id="save-settings-btn" class="flex-1 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-semibold transition-all active:scale-[0.98]">
+          Kaydet & Yenile
+        </button>
+        <button id="reset-settings-btn" class="px-3 py-2 rounded-lg border border-borderSubtle bg-canvas hover:bg-canvasSubtle text-fg-muted text-xs font-medium transition-all">
+          Sıfırla
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./src/app.js"></script>
+</body>
+</html>

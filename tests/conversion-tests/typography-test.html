@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Typography & Brand Identity Test</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Sektörel Kurumsal Fontlar -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    .font-fintech-serif { font-family: 'Newsreader', serif; }
+    .font-fintech-body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .font-tech-display { font-family: 'Space Grotesk', sans-serif; }
+  </style>
+</head>
+<body class="bg-[#09090b] text-zinc-100 min-h-screen p-6 sm:p-12 font-sans antialiased">
+
+  <div class="max-w-5xl mx-auto space-y-16">
+    
+    <div>
+      <h1 class="text-2xl font-bold tracking-tight">TDD Test 3: Sektörel Tipografi ve Karakter Eşleştirmesi</h1>
+      <p class="text-xs text-zinc-400 mt-1">Standart AI Jenerik Fontu vs Sektörel Kimlik Fontu</p>
+    </div>
+
+    <!-- ÖRNEK 1: FINTECH / VARLIK YÖNETİMİ -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      
+      <!-- RED: Jenerik Sans-serif (AI Slop) -->
+      <div class="border border-red-500/20 bg-zinc-950 p-6 rounded-xl space-y-4">
+        <span class="text-[10px] uppercase font-bold text-red-400 bg-red-500/10 px-2 py-0.5 rounded">RED: Jenerik AI Fontu (Tasarım Kimliği Yok)</span>
+        <h3 class="text-2xl font-bold tracking-tight text-white">Kurumsal Sermaye Yönetimi</h3>
+        <p class="text-xs text-zinc-400 leading-relaxed">
+          Uluslararası fon transferlerini ve şirket hazinesini tek bir platform üzerinden yönetin.
+        </p>
+        <button class="bg-zinc-800 text-xs px-4 py-2 rounded text-zinc-300 font-medium">Hesap Aç</button>
+      </div>
+
+      <!-- GREEN: Newsreader + Plus Jakarta Sans (Kurumsal Prestij) -->
+      <div class="border border-emerald-500/30 bg-zinc-950 p-6 rounded-xl space-y-4 font-fintech-body">
+        <span class="text-[10px] uppercase font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">GREEN: Sektörel Serif + Optik Ağırlık</span>
+        <h3 class="font-fintech-serif text-3xl font-normal tracking-tight text-white italic">
+          Kurumsal Sermaye <span class="not-italic font-semibold text-zinc-100">Yönetimi.</span>
+        </h3>
+        <p class="text-xs text-zinc-400 leading-relaxed font-normal">
+          Uluslararası fon transferlerini ve şirket hazinesini kurumsal denetim standartlarında yönetin.
+        </p>
+        <button class="bg-zinc-100 text-zinc-950 text-xs px-4 py-2.5 rounded-lg font-semibold active:scale-[0.98] transition-all">
+          Hazine Hesabını Başlat
+        </button>
+      </div>
+
+    </div>
+
+    <!-- ÖRNEK 2: DEVELOPER TOOLS / ALTYAPI -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      
+      <!-- RED: Standart AI Fontu -->
+      <div class="border border-red-500/20 bg-zinc-950 p-6 rounded-xl space-y-4">
+        <span class="text-[10px] uppercase font-bold text-red-400 bg-red-500/10 px-2 py-0.5 rounded">RED: Jenerik AI Fontu</span>
+        <h3 class="text-xl font-bold text-white">Yüksek Hızlı API Geçidi</h3>
+        <p class="text-xs text-zinc-400 leading-relaxed">
+          Mikroservisleriniz için 0.4ms gecikmeli küresel yönlendirme katmanı.
+        </p>
+      </div>
+
+      <!-- GREEN: Space Grotesk + Tabular Nums (Teknik Keskinlik) -->
+      <div class="border border-emerald-500/30 bg-zinc-950 p-6 rounded-xl space-y-4">
+        <span class="text-[10px] uppercase font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">GREEN: Space Grotesk + Mono Numaralar</span>
+        <h3 class="font-tech-display text-2xl font-bold tracking-tight text-white">
+          Yüksek Hızlı API Geçidi
+        </h3>
+        <p class="text-xs text-zinc-400 leading-relaxed">
+          Mikroservisleriniz için <span class="font-mono text-emerald-400 font-semibold tabular-nums">0.4ms</span> gecikmeli küresel yönlendirme katmanı.
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+
+</body>
+</html>

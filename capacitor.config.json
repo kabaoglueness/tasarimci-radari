@@ -1,0 +1,8 @@
+{
+  "appId": "com.studiofinder.radar",
+  "appName": "StudioFinder",
+  "webDir": "dist",
+  "server": {
+    "cleartext": true
+  }
+}

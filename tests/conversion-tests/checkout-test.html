@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Commerce Checkout Conversion Test - Before & After</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            background: '#09090b',
+            card: '#18181b',
+            border: '#27272a',
+            primary: '#16a34a', // E-ticaret yeşili (satın alma tetikleyici)
+            'primary-foreground': '#ffffff',
+            'muted-foreground': '#a1a1aa'
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-[#09090b] text-zinc-100 min-h-screen p-4 sm:p-8 font-sans antialiased">
+
+  <div class="max-w-6xl mx-auto space-y-16">
+    
+    <!-- BAŞLIK -->
+    <div class="border-b border-zinc-800 pb-6">
+      <h1 class="text-3xl font-extrabold tracking-tight">TDD Doğrulama Testi 2: E-Ticaret Sepet & Checkout</h1>
+      <p class="text-sm text-zinc-400 mt-2">Standart AI Sepet Akışı (RED) vs conversion-design Skilli Akışı (GREEN)</p>
+    </div>
+
+    <!-- 1. RED SENARYOSU (STANDART AI CHECKOUT SLOP) -->
+    <div class="border border-red-500/30 rounded-2xl bg-zinc-950/60 p-6 sm:p-8 space-y-6">
+      <div class="flex items-center justify-between border-b border-red-500/20 pb-4">
+        <span class="px-3 py-1 bg-red-500/10 text-red-400 text-xs font-bold rounded-full uppercase tracking-wider">RED: Standart AI Çıktısı (Sepet Terki Garantili)</span>
+        <span class="text-xs text-red-400/80">6 Kritik Sürtünme Hatası</span>
+      </div>
+
+      <div class="max-w-xl mx-auto bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-4">
+        <!-- Hata 1: Satın almadan önce zorunlu üyelik duvarı -->
+        <div class="p-3 bg-red-950/40 border border-red-500/30 rounded text-xs text-red-300">
+          ⚠️ Siparişi tamamlamak için lütfen önce üye olun veya giriş yapın.
+        </div>
+
+        <h3 class="text-lg font-bold">Ödeme ve Adres Bilgileri</h3>
+        
+        <!-- Hata 2: Aşırı ve gereksiz form kalabalığı -->
+        <div class="space-y-3 text-xs">
+          <div class="grid grid-cols-2 gap-2">
+            <input type="text" placeholder="Ad" class="bg-zinc-800 p-2.5 rounded border border-zinc-700 w-full">
+            <input type="text" placeholder="Soyad" class="bg-zinc-800 p-2.5 rounded border border-zinc-700 w-full">
+          </div>
+          <input type="password" placeholder="Yeni Hesap İçin Şifre Belirleyin (*Zorunlu)" class="bg-zinc-800 p-2.5 rounded border border-zinc-700 w-full">
+          <input type="text" placeholder="Adres Başlığı (Ev/İş)" class="bg-zinc-800 p-2.5 rounded border border-zinc-700 w-full">
+          <textarea placeholder="Açık Adres" class="bg-zinc-800 p-2.5 rounded border border-zinc-700 w-full h-16"></textarea>
+          <input type="text" placeholder="Posta Kodu" class="bg-zinc-800 p-2.5 rounded border border-zinc-700 w-full">
+        </div>
+
+        <!-- Hata 3: Gizli kargo masrafı sürprizi -->
+        <div class="border-t border-zinc-800 pt-3 text-xs space-y-1">
+          <div class="flex justify-between text-zinc-400"><span>Ara Toplam:</span><span>₺1.200</span></div>
+          <div class="flex justify-between text-amber-400 font-semibold"><span>Kargo Ücreti:</span><span>+₺85 (Son adımda eklendi!)</span></div>
+          <div class="flex justify-between text-base font-bold text-white pt-1"><span>Toplam:</span><span>₺1.285</span></div>
+        </div>
+
+        <!-- Hata 4: Pasif buton, basılma hissi yok, güven çapası yok -->
+        <button class="w-full bg-blue-600 p-3 rounded font-bold text-sm">Devam Et</button>
+      </div>
+    </div>
+
+    <!-- 2. GREEN SENARYOSU (conversion-design UYGULANMIŞ AKORDEON CHECKOUT) -->
+    <div class="border border-emerald-500/30 rounded-2xl bg-zinc-950/60 p-6 sm:p-8 space-y-6">
+      <div class="flex items-center justify-between border-b border-emerald-500/20 pb-4">
+        <span class="px-3 py-1 bg-emerald-500/10 text-emerald-400 text-xs font-bold rounded-full uppercase tracking-wider">GREEN: conversion-design (Audit 10/10 Pass)</span>
+        <span class="text-xs text-emerald-400/80">Guest Checkout • Sıfır Gizli Ücret • Güven Çapası</span>
+      </div>
+
+      <div class="max-w-2xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-6">
+        
+        <!-- Sol: Tek Ekran Sürtünmesiz Checkout (3 Kolon) -->
+        <div class="md:col-span-3 space-y-4">
+          
+          <!-- Kural 1: Misafir Alışverişi Serbest -->
+          <div class="flex items-center justify-between pb-2 border-b border-zinc-800">
+            <h3 class="text-base font-bold text-white">Hızlı Sipariş (Üyeliksiz)</h3>
+            <span class="text-[11px] text-zinc-400">Şifre gerekmez</span>
+          </div>
+
+          <!-- Kural 4 & 6: Gestalt Yakınlığı, Basitleştirilmiş Form -->
+          <form class="space-y-3" onsubmit="return false;">
+            <div>
+              <label class="block text-xs font-medium text-zinc-400 mb-1">E-posta (Sipariş Takibi İçin)</label>
+              <input 
+                type="email" 
+                autocomplete="email" 
+                placeholder="adiniz@eposta.com" 
+                class="w-full px-3 py-2.5 bg-zinc-900 border border-zinc-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all"
+                required
+              />
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-zinc-400 mb-1">Ad Soyad</label>
+              <input 
+                type="text" 
+                autocomplete="name" 
+                placeholder="Ahmet Yılmaz" 
+                class="w-full px-3 py-2.5 bg-zinc-900 border border-zinc-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all"
+                required
+              />
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-zinc-400 mb-1">Teslimat Adresi</label>
+              <input 
+                type="text" 
+                autocomplete="street-address" 
+                placeholder="Cadde, Mahalle, Kapı No, İl/İlçe" 
+                class="w-full px-3 py-2.5 bg-zinc-900 border border-zinc-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all"
+                required
+              />
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-zinc-400 mb-1">Telefon</label>
+              <input 
+                type="tel" 
+                inputmode="numeric" 
+                autocomplete="tel" 
+                placeholder="05XX XXX XX XX" 
+                class="w-full px-3 py-2.5 bg-zinc-900 border border-zinc-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all"
+                required
+              />
+            </div>
+          </form>
+        </div>
+
+        <!-- Sağ: Şeffaf Sepet Özeti + Primary CTA + Güven Çapası (2 Kolon) -->
+        <div class="md:col-span-2 bg-zinc-900/90 border border-zinc-800 p-4 rounded-xl flex flex-col justify-between space-y-4">
+          <div class="space-y-3">
+            <h4 class="text-xs font-bold text-zinc-300 uppercase tracking-wider border-b border-zinc-800 pb-2">Sipariş Özeti</h4>
+            
+            <div class="flex justify-between text-xs text-zinc-400">
+              <span>Kablosuz Tasarımcı Klavyesi</span>
+              <span class="font-mono text-zinc-200">₺1.200</span>
+            </div>
+
+            <!-- Kural 3: Şeffaf Kargo Bedeli -->
+            <div class="flex justify-between text-xs text-zinc-400">
+              <span>Kargo</span>
+              <span class="text-emerald-400 font-semibold">Ücretsiz</span>
+            </div>
+
+            <div class="border-t border-zinc-800 pt-2 flex justify-between items-baseline">
+              <span class="text-xs font-bold text-white">Toplam</span>
+              <span class="text-xl font-extrabold font-mono text-white">₺1.200</span>
+            </div>
+          </div>
+
+          <!-- Kural 7: Durum Bütünlüğü Olan CTA + Kural 4: Güven Çapası -->
+          <div class="space-y-2 pt-2">
+            <button 
+              type="button" 
+              class="w-full relative inline-flex items-center justify-center font-bold rounded-lg px-4 py-3 text-sm text-white bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] shadow-sm shadow-emerald-600/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 transition-all duration-150"
+            >
+              🔒 Siparişi Güvenle Tamamla
+            </button>
+
+            <!-- Güven Rozetleri (Buton Dibinde) -->
+            <div class="flex items-center justify-center gap-2 text-[10px] text-zinc-500 pt-1">
+              <span>🛡️ 256-Bit SSL</span>
+              <span>•</span>
+              <span>3D Secure</span>
+              <span>•</span>
+              <span>14 Gün İade</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Kural 5: Mobil Sabit Satın Alma Çubuğu (Sticky Preview) -->
+      <div class="block sm:hidden border-t border-zinc-800 pt-3 text-center">
+        <span class="text-xs text-zinc-500">📱 Mobilde bu buton ve toplam tutar ekranın en altına `sticky` olarak yapışır.</span>
+      </div>
+
+    </div>
+
+  </div>
+
+</body>
+</html>

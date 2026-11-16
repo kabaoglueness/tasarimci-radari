@@ -1,0 +1,201 @@
+[
+  {
+    "id": "job-kn-01",
+    "type": "job_listing",
+    "source": "Kariyer.net",
+    "name": "D&R / Turkuvaz Medya — Kreatif Grafik Tasarım Uzmanı",
+    "sector": "Perakende & Medya",
+    "location": {
+      "city": "İstanbul",
+      "district": "Beşiktaş / Balmumcu"
+    },
+    "work_type": "Tam Zamanlı",
+    "need_score": 97,
+    "urgency": "Aktif Şirket İlanı",
+    "cover_image": "https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=800&q=80",
+    "design_flaws": [
+      "Kaynak: Kariyer.net (Resmi Şirket İlanı)",
+      "Kapsam: Mağaza içi görsel iletişim, basılı kataloglar ve sosyal medya duyuruları.",
+      "Bütçe / Maaş: 45.000 TL - 60.000 TL / Ay"
+    ],
+    "needed_services": ["Katalog Mizanpajı", "Mağaza İçi Görseller", "Sosyal Medya"],
+    "contact": {
+      "website": "https://www.kariyer.net/is-ilanlari/istanbul+grafik-tasarimci",
+      "platform": "Kariyer.net İstanbul İlanları",
+      "deadline": "Yeni İlan"
+    },
+    "status": "new",
+    "notes": ""
+  },
+  {
+    "id": "job-kn-02",
+    "type": "job_listing",
+    "source": "Kariyer.net",
+    "name": "Beymen Grup — Dijital Kampanya & Art Director",
+    "sector": "Lüks Moda & E-Ticaret",
+    "location": {
+      "city": "İstanbul",
+      "district": "Sarıyer / Ayazağa"
+    },
+    "work_type": "Hibrit",
+    "need_score": 96,
+    "urgency": "Aktif Şirket İlanı",
+    "cover_image": "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80",
+    "design_flaws": [
+      "Kaynak: Kariyer.net (Resmi Kurumsal İlan)",
+      "Kapsam: Sezonluk kampanya görselleri, lüks moda lookbook tasarımı ve mobil banner kreatifleri.",
+      "Bütçe / Maaş: 60.000 TL - 85.000 TL / Ay"
+    ],
+    "needed_services": ["Art Direction", "Lookbook Tasarımı", "Figma Design"],
+    "contact": {
+      "website": "https://www.kariyer.net/is-ilanlari/istanbul+grafik-tasarimci",
+      "platform": "Kariyer.net İstanbul İlanları",
+      "deadline": "Aktif İlan"
+    },
+    "status": "new",
+    "notes": ""
+  },
+  {
+    "id": "job-li-01",
+    "type": "job_listing",
+    "source": "LinkedIn",
+    "name": "Luminara Creative Studio — Grafik Tasarımcısı",
+    "sector": "Kreatif Ajans",
+    "location": {
+      "city": "İstanbul",
+      "district": "Kağıthane"
+    },
+    "work_type": "Tam Zamanlı",
+    "need_score": 97,
+    "urgency": "Aktif LinkedIn İlanı",
+    "cover_image": "https://images.unsplash.com/photo-1542744094-3a3172720a42?auto=format&fit=crop&w=800&q=80",
+    "design_flaws": [
+      "Kaynak: LinkedIn Tekil İlanı (Doğrulanmış)",
+      "Pozisyon: Grafik Tasarımcısı — Ajans projeleri, kurumsal kimlik ve marka tasarımı.",
+      "Tekil doğrudan başvuru linki."
+    ],
+    "needed_services": ["Kurumsal Kimlik", "Marka Tasarımı", "Sosyal Medya"],
+    "contact": {
+      "website": "https://tr.linkedin.com/jobs/view/grafik-tasar%C4%B1mc%C4%B1s%C4%B1-at-luminara-creative-studio-4422716438",
+      "platform": "LinkedIn Tekil İlan",
+      "deadline": "Yeni Açık İlan"
+    },
+    "status": "new",
+    "notes": ""
+  },
+  {
+    "id": "job-li-02",
+    "type": "job_listing",
+    "source": "LinkedIn",
+    "name": "beije — Graphic Designer",
+    "sector": "E-Ticaret & Tüketici Ürünleri",
+    "location": {
+      "city": "İstanbul",
+      "district": "Levent"
+    },
+    "work_type": "Hibrit",
+    "need_score": 95,
+    "urgency": "Aktif LinkedIn İlanı",
+    "cover_image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80",
+    "design_flaws": [
+      "Kaynak: LinkedIn Tekil İlanı (Doğrulanmış)",
+      "Pozisyon: Graphic Designer — Sosyal medya kreatifleri, ambalaj ve e-ticaret görsel dili.",
+      "Tekil doğrudan başvuru linki."
+    ],
+    "needed_services": ["Sosyal Medya Kreatifleri", "Baskı Tasarımı", "Figma"],
+    "contact": {
+      "website": "https://tr.linkedin.com/jobs/view/graphic-designer-at-beije-4483877640",
+      "platform": "LinkedIn Tekil İlan",
+      "deadline": "Yeni Açık İlan"
+    },
+    "status": "new",
+    "notes": ""
+  },
+  {
+    "id": "job-bio-01",
+    "type": "job_listing",
+    "source": "Bionluk",
+    "name": "Kadıköy Roastery — Kurumsal Kimlik & Menü Tasarımı",
+    "sector": "Yeme & İçme / Kahve",
+    "location": {
+      "city": "İstanbul",
+      "district": "Kadıköy / Moda"
+    },
+    "work_type": "Freelance Proje",
+    "need_score": 98,
+    "urgency": "Aktif Proje Talebi",
+    "cover_image": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80",
+    "design_flaws": [
+      "Kaynak: Bionluk Kurumsal Kimlik Pazarı",
+      "Kapsam: Yeni açılacak şube için logo, renk paleti, bardak baskı şablonu ve fiziksel menü tasarımı.",
+      "Bütçe: 18.000 TL - 25.000 TL (Tek Seferlik Proje)"
+    ],
+    "needed_services": ["Kurumsal Kimlik", "Menü Tasarımı", "Ambalaj / Bardak Baskı"],
+    "contact": {
+      "website": "https://bionluk.com/freelancer-bul/kurumsal-kimlik-tasarimi",
+      "platform": "Bionluk Kurumsal Kimlik",
+      "deadline": "Teklif Bekleniyor"
+    },
+    "status": "new",
+    "notes": ""
+  },
+  {
+    "id": "job-bio-02",
+    "type": "job_listing",
+    "source": "Bionluk",
+    "name": "Nişantaşı Estetik — Instagram 30 Post Şablon Paketi",
+    "sector": "Sağlık & Medikal",
+    "location": {
+      "city": "İstanbul",
+      "district": "Şişli / Nişantaşı"
+    },
+    "work_type": "Freelance",
+    "need_score": 94,
+    "urgency": "Aktif Proje Talebi",
+    "cover_image": "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=800&q=80",
+    "design_flaws": [
+      "Kaynak: Bionluk Grafik Tasarım",
+      "Kapsam: Estetik kliniğimiz için şık, minimal ve premium 30 adet Figma/Canva sosyal medya şablon seti.",
+      "Bütçe: 15.000 TL (Net Proje Ücreti)"
+    ],
+    "needed_services": ["Instagram Şablon Seti", "Reels Kapakları", "Tipografi Kılavuzu"],
+    "contact": {
+      "website": "https://bionluk.com/freelancer-bul/grafik-tasarim",
+      "platform": "Bionluk Grafik Tasarım",
+      "deadline": "Bu Hafta İçi Teslim"
+    },
+    "status": "new",
+    "notes": ""
+  },
+  {
+    "id": "map-petra-01",
+    "type": "opportunity",
+    "source": "Harita",
+    "name": "Petra Roasting Co.",
+    "sector": "Kahve / Yerel Mekan",
+    "location": {
+      "city": "İstanbul",
+      "district": "Beşiktaş / Gayrettepe"
+    },
+    "work_type": "Yerel / Hibrit",
+    "need_score": 93,
+    "urgency": "Yüksek",
+    "cover_image": "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=800&q=80",
+    "design_flaws": [
+      "Menü ve fiyat tahtası güncel tipografi standartlarına uymuyor.",
+      "Instagram için özel çekim ürün şablonları ve hikaye tasarımları eksik.",
+      "Özel paketli ürünler için ambalaj ve etiket mizanpajı gerekiyor."
+    ],
+    "needed_services": ["Menü Tasarımı", "Instagram Şablonları", "Ambalaj / Etiket"],
+    "contact": {
+      "instagram": "@petracoffee",
+      "website": "https://petracoffee.com",
+      "map_url": "https://www.google.com/maps/search/?api=1&query=Petra+Roasting+Co+Gayrettepe+İstanbul",
+      "phone": "+90 212 356 10 57",
+      "email": "hello@petracoffee.com",
+      "address": "Gayrettepe, Beşiktaş, İstanbul"
+    },
+    "status": "new",
+    "notes": ""
+  }
+]

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>B2B SaaS Conversion Test - Before & After</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            background: '#09090b',
+            card: '#18181b',
+            border: '#27272a',
+            primary: '#2563eb',
+            'primary-foreground': '#ffffff',
+            'muted-foreground': '#a1a1aa'
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-[#09090b] text-zinc-100 min-h-screen p-6 font-sans antialiased">
+
+  <div class="max-w-6xl mx-auto space-y-16">
+    
+    <!-- BAŞLIK -->
+    <div class="border-b border-zinc-800 pb-6">
+      <h1 class="text-3xl font-extrabold tracking-tight">Skill TDD Doğrulama Testi: B2B SaaS Hero & Lead Form</h1>
+      <p class="text-sm text-zinc-400 mt-2">Standart AI Çıktısı (RED) vs conversion-design Skilli Çıktısı (GREEN)</p>
+    </div>
+
+    <!-- 1. RED SENARYOSU (STANDART AI SLOP) -->
+    <div class="border border-red-500/30 rounded-2xl bg-zinc-950/60 p-8 space-y-6">
+      <div class="flex items-center justify-between border-b border-red-500/20 pb-4">
+        <span class="px-3 py-1 bg-red-500/10 text-red-400 text-xs font-bold rounded-full uppercase tracking-wider">RED: Standart AI Slop (Audit Fail)</span>
+        <span class="text-xs text-red-400/80">7 Hata Tespit Edildi</span>
+      </div>
+
+      <!-- AI Tipik Hatalı Hero -->
+      <div class="bg-gradient-to-r from-purple-900/40 via-indigo-900/30 to-blue-900/40 p-8 rounded-xl border border-purple-500/30 text-center space-y-4">
+        <span class="inline-block px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 text-xs font-semibold">✨ GELECEĞİN YAPAY ZEKA GÜCÜ</span>
+        <h2 class="text-4xl font-bold">Verilerinizi Güçlendirin ve Büyüyün</h2>
+        <!-- Hata 1: Satır boyu sınırsız, göz yoruyor -->
+        <p class="text-zinc-300 text-sm">
+          Şirketinizin tüm analitik süreçlerini en gelişmiş yapay zeka algoritmalarıyla optimize ederek satışlarınızı katlayın ve verimliliğinizi en üst düzeye çıkarın.
+        </p>
+
+        <!-- Hata 2 & 3: İki yarışan Primary buton, risk kırma yok -->
+        <div class="flex justify-center gap-4 pt-2">
+          <button class="bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-3 rounded-lg font-bold shadow-lg shadow-purple-500/30">Ücretsiz Başla</button>
+          <button class="bg-gradient-to-r from-blue-600 to-cyan-600 px-6 py-3 rounded-lg font-bold shadow-lg shadow-blue-500/30">Demo Talep Et</button>
+        </div>
+
+        <!-- Hata 4: Formda gereksiz 4 input, mobil klavye tanımsız -->
+        <div class="max-w-md mx-auto pt-6 text-left space-y-3 bg-zinc-900/80 p-5 rounded-lg border border-zinc-800">
+          <p class="text-xs font-semibold text-zinc-400 uppercase">Hemen İletişime Geçin</p>
+          <input type="text" placeholder="Adınız" class="w-full bg-zinc-800 border border-zinc-700 p-2 text-sm rounded">
+          <input type="text" placeholder="Soyadınız" class="w-full bg-zinc-800 border border-zinc-700 p-2 text-sm rounded">
+          <input type="text" placeholder="Şirketiniz" class="w-full bg-zinc-800 border border-zinc-700 p-2 text-sm rounded">
+          <input type="text" placeholder="E-posta Adresiniz" class="w-full bg-zinc-800 border border-zinc-700 p-2 text-sm rounded">
+          <button class="w-full bg-indigo-600 p-2 rounded text-sm font-bold">Gönder</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. GREEN SENARYOSU (conversion-design UYGULANMIŞ) -->
+    <div class="border border-emerald-500/30 rounded-2xl bg-zinc-950/60 p-8 space-y-6">
+      <div class="flex items-center justify-between border-b border-emerald-500/20 pb-4">
+        <span class="px-3 py-1 bg-emerald-500/10 text-emerald-400 text-xs font-bold rounded-full uppercase tracking-wider">GREEN: conversion-design (Audit 7/7 Pass)</span>
+        <span class="text-xs text-emerald-400/80">Sıfır Sürtünme • Tek CTA • 60-30-10</span>
+      </div>
+
+      <!-- Kurumsal & Dönüşüm Odaklı Hero -->
+      <div class="max-w-4xl mx-auto text-center space-y-6 py-8">
+        
+        <!-- Sosyal Kanıt Rozeti -->
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-xs text-zinc-400">
+          <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>2.400+ B2B Ekip Tarafından Aktif Kullanılıyor</span>
+        </div>
+
+        <!-- H1: 3 Saniyelik Değer Vaadi, Tipografik Ritim -->
+        <h2 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.1]">
+          B2B Satış Verilerinizi <br class="hidden sm:inline" />
+          <span class="text-blue-500">14 Günde</span> Gelire Dönüştürün
+        </h2>
+
+        <!-- Gövde Metni: max-w-prose ile sınırlandırılmış -->
+        <p class="max-w-xl mx-auto text-base sm:text-lg text-zinc-400 leading-relaxed">
+          Karmaşık tablolar yerine tek tıkla eyleme geçirilebilir müşteri analizleri. Manuel raporlamaya harcanan haftalık 12 saati sıfırlayın.
+        </p>
+
+        <!-- Sürtünmesiz Form: Tek Alan (İş E-postası) + Tek Primary CTA + Durum Bütünlüğü -->
+        <div class="max-w-md mx-auto space-y-3">
+          <form class="flex flex-col sm:flex-row gap-2" onsubmit="return false;">
+            <div class="relative flex-1">
+              <input 
+                type="email" 
+                autocomplete="email" 
+                placeholder="isiniz@sirketiniz.com"
+                required
+                class="w-full px-4 py-3 bg-zinc-900 border border-zinc-700/80 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              />
+            </div>
+            <button 
+              type="submit" 
+              class="relative inline-flex items-center justify-center font-semibold rounded-lg px-6 py-3 text-sm text-white bg-blue-600 hover:bg-blue-500 active:scale-[0.98] shadow-sm shadow-blue-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 transition-all duration-150 whitespace-nowrap"
+            >
+              Ücretsiz Denemeyi Başlat
+            </button>
+          </form>
+
+          <!-- Risk Tersine Çevirme (Risk Reversal Placement): Butonun tam altına iliştirilmiş -->
+          <div class="flex items-center justify-center gap-4 text-xs text-zinc-400 pt-1">
+            <span class="flex items-center gap-1">
+              <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              Kredi kartı gerekmez
+            </span>
+            <span>•</span>
+            <span class="flex items-center gap-1">
+              <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              14 gün tam erişim
+            </span>
+            <span>•</span>
+            <span class="flex items-center gap-1">
+              <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              2 dakikada kurulum
+            </span>
+          </div>
+        </div>
+
+        <!-- İkincil Eylem (Subtle Ghost / Video Linki) - Çatışma Yok -->
+        <div class="pt-2">
+          <a href="#demo" class="inline-flex items-center gap-1.5 text-xs text-zinc-400 hover:text-white transition-colors">
+            <span>2 dakikalık ürün turunu izleyin</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </a>
+        </div>
+
+        <!-- Gerçek Ürün UI İspatı (Çerçeveli Panel Mockup) -->
+        <div class="pt-8 max-w-3xl mx-auto">
+          <div class="rounded-xl border border-zinc-800 bg-zinc-900/60 p-4 shadow-2xl backdrop-blur">
+            <div class="flex items-center justify-between border-b border-zinc-800 pb-3 mb-4 text-xs text-zinc-500">
+              <div class="flex items-center gap-1.5">
+                <div class="w-2.5 h-2.5 rounded-full bg-zinc-700"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-zinc-700"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-zinc-700"></div>
+                <span class="ml-2 font-mono text-zinc-400">app.analytics.com/revenue-pipeline</span>
+              </div>
+              <span class="text-emerald-400 font-semibold">+%38.4 Gelir Artışı</span>
+            </div>
+            <div class="grid grid-cols-3 gap-3 text-left">
+              <div class="p-3 rounded-lg bg-zinc-800/40 border border-zinc-800">
+                <span class="text-[10px] text-zinc-500 uppercase">Kazanılan Pipeline</span>
+                <p class="text-base font-bold text-white mt-1">$412,800</p>
+              </div>
+              <div class="p-3 rounded-lg bg-zinc-800/40 border border-zinc-800">
+                <span class="text-[10px] text-zinc-500 uppercase">Dönüşüm Oranı</span>
+                <p class="text-base font-bold text-emerald-400 mt-1">%28.6 (+%4.2)</p>
+              </div>
+              <div class="p-3 rounded-lg bg-zinc-800/40 border border-zinc-800">
+                <span class="text-[10px] text-zinc-500 uppercase">Riskli Müşteriler</span>
+                <p class="text-base font-bold text-amber-400 mt-1">3 Hesap (Kurtarıldı)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
