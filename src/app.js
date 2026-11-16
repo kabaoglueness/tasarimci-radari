@@ -1,5 +1,28 @@
 import { LeadEngine } from './engine.js';
 
+/**
+ * DOM XSS saldırılarına karşı HTML varlık filtreleme (CWE-79 Remediation)
+ */
+export function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+/**
+ * Güvensiz protokolleri (javascript:, data:, vb.) engelleyen URL temizleyici
+ */
+export function sanitizeUrl(url) {
+  if (!url || typeof url !== 'string') return '#';
+  const clean = url.trim();
+  if (clean.startsWith('http://') || clean.startsWith('https://')) return clean;
+  return '#';
+}
+
 let engine;
 let activeDetailTab = 'overview'; // 'overview' | 'pitch'
 
@@ -246,9 +269,16 @@ function renderGrid() {
       ? lead.design_flaws[0].replace(/^(Kaynak|Kapsam):\s*/i, '')
       : 'Görsel iletişim ve tasarım revizyonu ihtiyacı.';
 
+    const safeId = escapeHtml(lead.id);
+    const safeDistrict = escapeHtml(lead.location?.district || '');
+    const safeNeedScore = Number(lead.need_score) || 0;
+    const safeSector = escapeHtml(lead.sector || '');
+    const safeName = escapeHtml(lead.name || '');
+    const safeProblem = escapeHtml(cleanProblem);
+
     return `
       <div 
-        data-id="${lead.id}" 
+        data-id="${safeId}" 
         class="conversion-card group cursor-pointer ${isSelected ? 'conversion-card-selected' : ''} rounded-xl p-3.5 sm:p-4 flex flex-col gap-2.5 relative"
       >
         <!-- Üst Bar: Kaynak, Lokasyon ve İhtiyaç Skoru -->
@@ -256,17 +286,17 @@ function renderGrid() {
           <div class="flex items-center gap-1.5">
             <span class="text-[11px] font-sans font-semibold px-2 py-0.5 rounded-md border ${style.pill} flex items-center gap-1.5 tracking-tight">
               <span class="w-1.5 h-1.5 rounded-full ${style.dot}"></span>
-              ${style.label}
+              ${escapeHtml(style.label)}
             </span>
             <span class="text-[11px] text-fg-faint truncate max-w-[140px] font-medium">
-              ${lead.location.district}
+              ${safeDistrict}
             </span>
           </div>
 
           <!-- Yüksek Dönüşüm Skoru (Sağa Yaslı Tabular Rakam) -->
           <div class="flex items-center gap-1 text-[11px] font-sans tabular-nums text-right shrink-0">
-            <span class="${lead.need_score >= 95 ? 'text-amber-600 font-bold' : 'text-zinc-700 font-semibold'}">
-              %${lead.need_score}
+            <span class="${safeNeedScore >= 95 ? 'text-amber-600 font-bold' : 'text-zinc-700 font-semibold'}">
+              %${safeNeedScore}
             </span>
             <span class="text-[10px] text-fg-faint font-medium">İhtiyaç</span>
           </div>
@@ -274,26 +304,26 @@ function renderGrid() {
 
         <!-- Başlık ve Firma -->
         <div>
-          <div class="text-[10px] font-sans font-semibold uppercase tracking-wider text-fg-faint mb-0.5">${lead.sector}</div>
+          <div class="text-[10px] font-sans font-semibold uppercase tracking-wider text-fg-faint mb-0.5">${safeSector}</div>
           <h3 class="font-bold text-xs sm:text-sm text-zinc-900 tracking-tight leading-snug group-hover:text-black line-clamp-1">
-            ${lead.name}
+            ${safeName}
           </h3>
         </div>
 
         <!-- Problem / Tespit Edilen Açık (Gestalt Yakınlık - Açık Gri Zemin) -->
         <div class="text-[11px] text-fg-muted leading-relaxed line-clamp-2 bg-canvasSubtle/70 border border-borderSubtle rounded-lg p-2 font-normal">
-          ${cleanProblem}
+          ${safeProblem}
         </div>
 
         <!-- Alt Bar: Hizmet Etiketleri ve Seçim Durumu -->
         <div class="flex items-center justify-between gap-2 pt-1 border-t border-borderSubtle text-[10px]">
           <div class="flex items-center gap-1 overflow-hidden">
-            ${lead.needed_services.slice(0, 2).map(svc => `
+            ${(lead.needed_services || []).slice(0, 2).map(svc => `
               <span class="font-sans font-medium bg-canvas border border-borderSubtle text-fg-muted px-2 py-0.5 rounded truncate">
-                ${svc}
+                ${escapeHtml(svc)}
               </span>
             `).join('')}
-            ${lead.needed_services.length > 2 ? `<span class="font-sans text-fg-faint font-medium">+${lead.needed_services.length - 2}</span>` : ''}
+            ${(lead.needed_services || []).length > 2 ? `<span class="font-sans text-fg-faint font-medium">+${(lead.needed_services || []).length - 2}</span>` : ''}
           </div>
 
           <span class="font-sans font-medium text-[10px] text-fg-faint flex items-center gap-1 group-hover:text-zinc-900 transition-colors shrink-0">
@@ -390,7 +420,17 @@ function renderDetail() {
   const isJob = lead.type === 'job_listing';
   const style = getSourceStyle(lead.source);
   const pitchText = generateConversionPitch(lead);
-  const directUrl = lead.contact?.website || lead.contact?.map_url || '#';
+  const rawDirectUrl = lead.contact?.website || lead.contact?.map_url || '#';
+  const directUrl = sanitizeUrl(rawDirectUrl);
+
+  const safeName = escapeHtml(lead.name || '');
+  const safeSector = escapeHtml(lead.sector || '');
+  const safeCity = escapeHtml(lead.location?.city || '');
+  const safeDistrict = escapeHtml(lead.location?.district || '');
+  const safeWorkType = escapeHtml(lead.work_type || '');
+  const safeNeedScore = Number(lead.need_score) || 0;
+  const safeNotes = escapeHtml(lead.notes || '');
+  const safePitchText = escapeHtml(pitchText || '');
 
   // VIEWPORT BAŞINA TEK PRIMARY CTA KURALI (Figma / Notion Light Studio Clean)
   // Ana Aksiyon Butonu: Net, yüksek kontrastlı siyah buton (#111827 / bg-zinc-900 hover:bg-zinc-800 text-white)
@@ -413,8 +453,8 @@ function renderDetail() {
 
   // İkincil Hayalet Aksiyonlar (Ghost Action Buttons: border border-gray-300 bg-white text-gray-700)
   let secondaryActionsHtml = '';
-  if (lead.contact.phone) {
-    const cleanPhone = lead.contact.phone.replace(/[^0-9]/g, '');
+  if (lead.contact?.phone) {
+    const cleanPhone = encodeURIComponent(String(lead.contact.phone).replace(/[^0-9+]/g, ''));
     secondaryActionsHtml += `
       <a 
         href="https://wa.me/${cleanPhone}" 
@@ -427,10 +467,11 @@ function renderDetail() {
       </a>
     `;
   }
-  if (lead.contact.website) {
+  if (lead.contact?.website) {
+    const safeWebUrl = sanitizeUrl(lead.contact.website);
     secondaryActionsHtml += `
       <a 
-        href="${lead.contact.website}" 
+        href="${safeWebUrl}" 
         target="_blank" 
         rel="noopener noreferrer"
         class="flex-1 py-2 px-3 rounded-lg border border-gray-300 hover:border-gray-400 bg-white hover:bg-gray-50 text-xs text-gray-700 hover:text-gray-900 transition-all text-center flex items-center justify-center gap-1.5 shadow-xs"
@@ -440,10 +481,11 @@ function renderDetail() {
       </a>
     `;
   }
-  if (lead.contact.email) {
+  if (lead.contact?.email) {
+    const safeEmail = encodeURIComponent(String(lead.contact.email).trim());
     secondaryActionsHtml += `
       <a 
-        href="mailto:${lead.contact.email}" 
+        href="mailto:${safeEmail}" 
         class="flex-1 py-2 px-3 rounded-lg border border-gray-300 hover:border-gray-400 bg-white hover:bg-gray-50 text-xs text-gray-700 hover:text-gray-900 transition-all text-center flex items-center justify-center gap-1.5 shadow-xs"
       >
         <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
@@ -459,9 +501,9 @@ function renderDetail() {
         <div class="flex items-center gap-2">
           <span class="text-[11px] font-sans font-semibold px-2 py-0.5 rounded border ${style.pill} flex items-center gap-1.5 tracking-tight">
             <span class="w-1.5 h-1.5 rounded-full ${style.dot}"></span>
-            ${style.label}
+            ${escapeHtml(style.label)}
           </span>
-          <span class="text-xs font-sans font-bold text-amber-600 tabular-data">%${lead.need_score} İhtiyaç</span>
+          <span class="text-xs font-sans font-bold text-amber-600 tabular-data">%${safeNeedScore} İhtiyaç</span>
         </div>
         <button id="close-drawer-btn" class="lg:hidden p-1.5 rounded-lg border border-borderSubtle bg-canvas text-fg-muted hover:text-zinc-900 text-xs font-medium">
           ✕ Kapat
@@ -469,12 +511,12 @@ function renderDetail() {
       </div>
 
       <div>
-        <div class="text-[10px] font-sans font-semibold uppercase tracking-wider text-fg-faint mb-1">${lead.sector}</div>
-        <h2 class="font-bold text-base sm:text-lg text-zinc-900 tracking-tight leading-snug">${lead.name}</h2>
+        <div class="text-[10px] font-sans font-semibold uppercase tracking-wider text-fg-faint mb-1">${safeSector}</div>
+        <h2 class="font-bold text-base sm:text-lg text-zinc-900 tracking-tight leading-snug">${safeName}</h2>
         <div class="text-xs text-fg-muted mt-1 flex items-center gap-2">
-          <span>${lead.location.city}, ${lead.location.district}</span>
+          <span>${safeCity}, ${safeDistrict}</span>
           <span>•</span>
-          <span class="font-sans text-fg-faint text-[11px] font-medium">${lead.work_type}</span>
+          <span class="font-sans text-fg-faint text-[11px] font-medium">${safeWorkType}</span>
         </div>
       </div>
 
@@ -486,13 +528,13 @@ function renderDetail() {
           rel="noopener noreferrer"
           class="w-full py-3 px-4 rounded-xl font-bold text-xs sm:text-sm bg-zinc-900 hover:bg-zinc-800 text-white flex items-center justify-between transition-all duration-150 active:scale-[0.98] shadow-sm"
         >
-          <span>${primaryCtaTitle}</span>
+          <span>${escapeHtml(primaryCtaTitle)}</span>
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
         </a>
 
         <!-- RİSK TERSİNE ÇEVİRME (Mikro güvence kopyası) -->
         <span class="text-[10px] text-fg-faint text-center mt-2 font-sans font-medium">
-          ${primaryCtaSub}
+          ${escapeHtml(primaryCtaSub)}
         </span>
       </div>
 
@@ -513,10 +555,10 @@ function renderDetail() {
           ${isJob ? 'İlan Kapsamı & Şartlar' : 'Problem & Değer Eşleşmesi'}
         </div>
         <div class="bg-canvas border border-borderSubtle rounded-xl p-3 flex flex-col gap-2.5">
-          ${lead.design_flaws.map(flaw => `
+          ${(lead.design_flaws || []).map(flaw => `
             <div class="flex items-start gap-2.5 text-xs text-fg-muted leading-relaxed">
               <span class="text-amber-500 font-bold shrink-0 mt-0.5">•</span>
-              <span>${flaw}</span>
+              <span>${escapeHtml(flaw)}</span>
             </div>
           `).join('')}
         </div>
@@ -526,9 +568,9 @@ function renderDetail() {
       <div>
         <div class="text-[10px] font-semibold text-fg-faint uppercase tracking-wider mb-2 font-sans">Önerilen Hizmet Paketi</div>
         <div class="flex flex-wrap gap-1.5">
-          ${lead.needed_services.map(svc => `
+          ${(lead.needed_services || []).map(svc => `
             <span class="text-xs bg-canvas border border-borderSubtle text-zinc-800 px-2.5 py-1 rounded-lg font-sans font-medium">
-              ${svc}
+              ${escapeHtml(svc)}
             </span>
           `).join('')}
         </div>
@@ -548,7 +590,7 @@ function renderDetail() {
             id="pitch-textarea" 
             readonly
             class="w-full h-36 bg-canvas border border-borderSubtle rounded-xl p-3 text-xs text-zinc-700 font-sans leading-relaxed resize-none focus:outline-none"
-          >${pitchText}</textarea>
+          >${safePitchText}</textarea>
           <button 
             id="copy-pitch-btn" 
             class="absolute bottom-3 right-3 px-3 py-1.5 rounded-lg bg-white hover:bg-gray-50 text-zinc-800 border border-gray-300 hover:border-gray-400 font-medium text-xs flex items-center gap-1.5 transition-all active:scale-[0.98] shadow-xs"
@@ -569,7 +611,7 @@ function renderDetail() {
           id="lead-notes-area"
           placeholder="Örn: Portfolyo linkiyle iletişime geçildi, teklif bekleniyor..."
           class="w-full h-16 bg-canvas border border-borderSubtle rounded-xl p-2.5 text-xs text-zinc-900 placeholder-fg-faint focus:outline-none focus:bg-white focus:border-zinc-400 resize-none transition-colors"
-        >${lead.notes || ''}</textarea>
+        >${safeNotes}</textarea>
         <span class="text-[10px] text-fg-faint">Yazıp çıktığınızda otomatik kaydedilir.</span>
       </div>
 

@@ -220,6 +220,8 @@ def init_db():
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
     with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.cursor()
+        cursor.execute("PRAGMA journal_mode=WAL;")
+        cursor.execute("PRAGMA busy_timeout=5000;")
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS leads (
                 id TEXT PRIMARY KEY,
@@ -765,7 +767,7 @@ class HardenedStudioHandler(http.server.BaseHTTPRequestHandler):
         self.send_security_headers(200, 'application/json; charset=utf-8')
         self.send_header('Content-Length', str(len(payload)))
         self.send_header('X-Data-Source', 'SQLite-Verified')
-        self.send_header('X-Last-Sync', get_last_sync_time())
+        self.send_header('X-Last-Sync', urllib.parse.quote(str(get_last_sync_time())))
         self.end_headers()
         if body:
             self.wfile.write(payload)

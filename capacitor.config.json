@@ -3,6 +3,6 @@
   "appName": "StudioFinder",
   "webDir": "dist",
   "server": {
-    "cleartext": true
+    "cleartext": false
   }
 }

@@ -8,6 +8,7 @@ Eşleşmezse GitHub için güvenli kurumsal placeholder verileri sunar.
 """
 
 from http.server import BaseHTTPRequestHandler
+import hmac
 import json
 import os
 import re
@@ -15,7 +16,7 @@ import urllib.parse
 import urllib.request
 
 # Vercel Panelinden tanımlanacak gizli anahtar (Varsayılan yoksa yetkisiz sayılır)
-SECRET_ACCESS_TOKEN = os.environ.get("STUDIO_SECRET_TOKEN", "sf_master_secret_2026")
+SECRET_ACCESS_TOKEN = os.environ.get("STUDIO_SECRET_TOKEN")
 
 PLACEHOLDER_LEADS = [
     {
@@ -155,16 +156,29 @@ class handler(BaseHTTPRequestHandler):
         params = urllib.parse.parse_qs(parsed.query)
 
         # Kullanıcının girdiği gizli token kontrolü
-        user_token = params.get('token', [''])[0] or self.headers.get('X-Access-Token', '')
+        # Authorization: Bearer <token>, X-Access-Token header veya query param ?token= desteklenir
+        user_token = ""
+        auth_header = self.headers.get('Authorization', '')
+        if auth_header.startswith('Bearer '):
+            user_token = auth_header[7:].strip()
+        if not user_token:
+            user_token = self.headers.get('X-Access-Token', '').strip()
+        if not user_token:
+            user_token = params.get('token', [''])[0].strip()
 
         # Eğer token doğruysa CANLI verileri çek ve ver, değilse güvenli placeholder dön
-        if user_token and user_token == SECRET_ACCESS_TOKEN:
+        # Timing attack koruması için hmac.compare_digest kullanılır
+        is_live = False
+        secret_token = os.environ.get("STUDIO_SECRET_TOKEN") or SECRET_ACCESS_TOKEN
+        if secret_token and user_token:
+            if hmac.compare_digest(user_token.encode('utf-8'), secret_token.encode('utf-8')):
+                is_live = True
+
+        if is_live:
             live_jobs = fetch_live_linkedin()
             data = live_jobs if live_jobs else list(PLACEHOLDER_LEADS)
-            is_live = True
         else:
             data = list(PLACEHOLDER_LEADS)
-            is_live = False
 
         payload = json.dumps(data, ensure_ascii=False).encode('utf-8')
         self.send_response(200)

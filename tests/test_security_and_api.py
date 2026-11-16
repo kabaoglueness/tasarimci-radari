@@ -12,7 +12,7 @@ import threading
 import time
 import unittest
 import urllib.parse
-from server import ThreadedHTTPServer, HardenedStudioHandler
+from server import ThreadedHTTPServer, HardenedStudioHandler, init_db
 
 TEST_PORT = 8991
 TEST_HOST = "127.0.0.1"
@@ -20,6 +20,7 @@ TEST_HOST = "127.0.0.1"
 class TestStudioRadarBackend(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        init_db()
         # Test sunucusunu ayrı bir thread içinde başlat
         cls.server = ThreadedHTTPServer((TEST_HOST, TEST_PORT), HardenedStudioHandler)
         cls.thread = threading.Thread(target=cls.server.serve_forever, daemon=True)
@@ -136,6 +137,74 @@ class TestStudioRadarBackend(unittest.TestCase):
         data = json.loads(res.read().decode('utf-8'))
         self.assertIsInstance(data, list)
         conn.close()
+
+    def test_12_x_last_sync_header_ascii_safe(self):
+        """X-Last-Sync başlığının Türkçe karakter crash yaratmadığını doğrular."""
+        conn = self.get_connection()
+        conn.request("GET", "/api/search-real?query=Kafe")
+        res = conn.getresponse()
+        self.assertEqual(res.status, 200)
+        sync_header = res.getheader("X-Last-Sync")
+        self.assertIsNotNone(sync_header)
+        # Header ASCII olarak encode edilebilmeli (latin-1 / ASCII safe)
+        sync_header.encode('ascii')
+        conn.close()
+
+    def test_13_no_hardcoded_secret_token(self):
+        """api/search-real.py içinde hardcoded master token olmadığını doğrular."""
+        import importlib.util
+        import os
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        api_path = os.path.join(base_dir, "api", "search-real.py")
+        with open(api_path, "r", encoding="utf-8") as f:
+            code = f.read()
+        self.assertNotIn("sf_master_secret_2026", code)
+        self.assertIn("hmac.compare_digest", code)
+
+        spec = importlib.util.spec_from_file_location("search_real", api_path)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        if "STUDIO_SECRET_TOKEN" not in os.environ:
+            self.assertIsNone(mod.SECRET_ACCESS_TOKEN)
+
+    def test_14_sqlite_wal_mode(self):
+        """SQLite veritabanının WAL modunda olduğunu doğrular."""
+        import os
+        import sqlite3
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        db_path = os.path.join(base_dir, "data", "radar.db")
+        if os.path.exists(db_path):
+            with sqlite3.connect(db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute("PRAGMA journal_mode;")
+                row = cursor.fetchone()
+                self.assertIn(row[0].lower(), ["wal", "memory"])
+
+    def test_15_android_and_capacitor_security(self):
+        """Android Manifest ve Capacitor konfigürasyonunda cleartext/backup sıkılaştırmasını doğrular."""
+        import json
+        import os
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        cap_path = os.path.join(base_dir, "capacitor.config.json")
+        with open(cap_path, "r", encoding="utf-8") as f:
+            cap_cfg = json.load(f)
+        self.assertFalse(cap_cfg.get("server", {}).get("cleartext", True))
+
+        manifest_path = os.path.join(base_dir, "android", "app", "src", "main", "AndroidManifest.xml")
+        with open(manifest_path, "r", encoding="utf-8") as f:
+            manifest_content = f.read()
+        self.assertIn('android:allowBackup="false"', manifest_content)
+        self.assertIn('android:usesCleartextTraffic="false"', manifest_content)
+
+    def test_16_pii_anonymized_in_leads_json(self):
+        """data/leads.json içerisinde açık telefon ve şahsi e-posta olmadığını doğrular."""
+        import os
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        leads_path = os.path.join(base_dir, "data", "leads.json")
+        with open(leads_path, "r", encoding="utf-8") as f:
+            leads_content = f.read()
+        self.assertNotIn("+90 212 356 10 57", leads_content)
+        self.assertNotIn("hello@petracoffee.com", leads_content)
 
 
 if __name__ == "__main__":

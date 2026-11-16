@@ -1,0 +1,22 @@
+# Vercel Deployment Ignore Rules
+# Local desktop server & scripts
+server.py
+start.bat
+
+# Native / Android build files
+android/
+
+# Tests & Test Artefacts
+tests/
+
+# Build artifacts & dependencies
+dist/
+node_modules/
+data/radar.db
+
+# Environment secrets
+.env*
+
+# Python caches
+__pycache__/
+*.pyc
