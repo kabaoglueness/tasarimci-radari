@@ -44,9 +44,13 @@ async function init() {
   try {
     const apiBase = engine.getServerUrl();
     const token = engine.getSecretToken();
-    const tokenParam = token ? `&token=${encodeURIComponent(token)}` : '';
-    const liveRes = await fetch(`${apiBase}/api/search_real?query=Tasarım${tokenParam}`, {
-      headers: token ? { 'X-Access-Token': token } : {}
+    const headers = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+      headers['X-Access-Token'] = token;
+    }
+    const liveRes = await fetch(`${apiBase}/api/search_real?query=Tasarım`, {
+      headers: headers
     });
     const liveAccessStatus = liveRes.headers.get('X-Live-Access');
     const badge = document.getElementById('live-status-badge');

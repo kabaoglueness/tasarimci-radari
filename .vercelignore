@@ -14,6 +14,16 @@ dist/
 node_modules/
 data/radar.db
 
+# Documentation & Sensitive Info (Information Disclosure Koruması)
+SECURITY_AUDIT.md
+*.md
+docs/
+package.json
+package-lock.json
+pyproject.toml
+.vercelignore
+.gitignore
+
 # Environment secrets
 .env*
 

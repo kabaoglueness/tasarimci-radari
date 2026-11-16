@@ -214,6 +214,64 @@ class TestStudioRadarBackend(unittest.TestCase):
         self.assertNotIn("+90 212 356 10 57", leads_content)
         self.assertNotIn("hello@petracoffee.com", leads_content)
 
+    def test_18_no_auth_key_hash_backdoor(self):
+        """api/search_real.py içerisinde hardcoded AUTH_KEY_HASH olmadığını doğrular."""
+        import os
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        api_path = os.path.join(base_dir, "api", "search_real.py")
+        with open(api_path, "r", encoding="utf-8") as f:
+            code = f.read()
+        self.assertNotIn("AUTH_KEY_HASH", code)
+        self.assertNotIn("f24fbff3259435331edbea7d72d0842b1e1bccaaef9b886ce0a44a15721380c3", code)
+
+    def test_19_search_real_blocks_sensitive_static_files(self):
+        """api/search_real.py resolve_safe_static_path'in hassas dosyaları blokladığını doğrular."""
+        import importlib.util
+        import os
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        api_path = os.path.join(base_dir, "api", "search_real.py")
+        spec = importlib.util.spec_from_file_location("search_real", api_path)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        
+        # Hassas dosyalar None dönmeli
+        self.assertIsNone(mod.resolve_safe_static_path("/SECURITY_AUDIT.md"))
+        self.assertIsNone(mod.resolve_safe_static_path("/package.json"))
+        self.assertIsNone(mod.resolve_safe_static_path("/pyproject.toml"))
+        self.assertIsNone(mod.resolve_safe_static_path("/.vercelignore"))
+        self.assertIsNone(mod.resolve_safe_static_path("/server.py"))
+        self.assertIsNone(mod.resolve_safe_static_path("/.git/config"))
+        # Güvenli statik dosyalar çözümlenmeli
+        self.assertIsNotNone(mod.resolve_safe_static_path("/index.html"))
+        self.assertIsNotNone(mod.resolve_safe_static_path("/favicon.svg"))
+
+    def test_20_vercel_json_security_headers(self):
+        """vercel.json içerisinde CSP ve X-Frame-Options gibi güvenlik başlıklarının olduğunu doğrular."""
+        import json
+        import os
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        vercel_path = os.path.join(base_dir, "vercel.json")
+        with open(vercel_path, "r", encoding="utf-8") as f:
+            cfg = json.load(f)
+        self.assertIn("headers", cfg)
+        headers = cfg["headers"][0]["headers"]
+        header_keys = [h["key"] for h in headers]
+        self.assertIn("Content-Security-Policy", header_keys)
+        self.assertIn("X-Frame-Options", header_keys)
+        self.assertIn("X-Content-Type-Options", header_keys)
+
+    def test_21_vercelignore_blocks_sensitive_files(self):
+        """.vercelignore dosyasının dokümantasyon ve config dosyalarını engellediğini doğrular."""
+        import os
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        vignore_path = os.path.join(base_dir, ".vercelignore")
+        with open(vignore_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        self.assertIn("SECURITY_AUDIT.md", content)
+        self.assertIn("*.md", content)
+        self.assertIn("docs/", content)
+        self.assertIn("package.json", content)
+
 
 if __name__ == "__main__":
     unittest.main()

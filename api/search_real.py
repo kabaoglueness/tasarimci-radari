@@ -8,7 +8,6 @@ Kök yolda ("/") ve statik yollarda index.html ve web bileşenlerini sunar.
 """
 
 from http.server import BaseHTTPRequestHandler
-import hashlib
 import hmac
 import json
 import os
@@ -16,10 +15,7 @@ import re
 import urllib.parse
 import urllib.request
 
-# Kullanıcıya özel kriptografik SHA-256 erişim hash'i (Düz metin şifre kodda bulunmaz)
-AUTH_KEY_HASH = "f24fbff3259435331edbea7d72d0842b1e1bccaaef9b886ce0a44a15721380c3"
-
-# Vercel Panelinden tanımlanacak gizli anahtar (Varsayılan yoksa yetkisiz sayılır)
+# Vercel Panelinden tanımlanacak gizli anahtar (Ortam değişkeni yoksa yetkisiz sayılır)
 SECRET_ACCESS_TOKEN = os.environ.get("STUDIO_SECRET_TOKEN")
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -35,19 +31,56 @@ MIME_TYPES = {
     ".jpg": "image/jpeg",
     ".jpeg": "image/jpeg",
     ".ico": "image/x-icon",
-    ".txt": "text/plain; charset=utf-8"
+    ".txt": "text/plain; charset=utf-8",
+    ".woff": "font/woff",
+    ".woff2": "font/woff2"
+}
+
+ALLOWED_STATIC_EXTENSIONS = {
+    ".html", ".js", ".mjs", ".css", ".json", ".svg", ".png",
+    ".jpg", ".jpeg", ".ico", ".txt", ".woff", ".woff2"
+}
+
+BLOCKED_STATIC_FILES = {
+    "server.py", "start.bat", "package.json", "package-lock.json",
+    "pyproject.toml", "security_audit.md", ".vercelignore", ".gitignore",
+    ".env", ".env.example", "radar.db", "readme.md", "implementation_plan.md",
+    "brand.md"
 }
 
 def resolve_safe_static_path(url_path: str):
     clean_path = url_path.split('?')[0].lstrip('/')
     if not clean_path or clean_path == "index.html":
         clean_path = "index.html"
+    
     target = os.path.abspath(os.path.join(BASE_DIR, clean_path))
-    # Path traversal denetimi
-    if not target.startswith(BASE_DIR):
+    
+    # 1. Chroot Path Traversal denetimi (commonpath tabanlı)
+    try:
+        canonical_base = os.path.realpath(BASE_DIR)
+        canonical_target = os.path.realpath(target)
+        if os.path.commonpath([canonical_base, canonical_target]) != canonical_base:
+            return None
+    except Exception:
         return None
-    if os.path.isfile(target):
-        return target
+
+    # 2. Gizli dosya engeli (.git, .env vb.)
+    parts = clean_path.replace('\\', '/').split('/')
+    for part in parts:
+        if part.startswith('.') and part not in ('.', '..'):
+            return None
+
+    # 3. İzin verilen uzantılar ve yasaklı dosyalar
+    filename = os.path.basename(canonical_target).lower()
+    if filename in BLOCKED_STATIC_FILES:
+        return None
+    
+    _, ext = os.path.splitext(filename)
+    if ext not in ALLOWED_STATIC_EXTENSIONS:
+        return None
+
+    if os.path.isfile(canonical_target):
+        return canonical_target
     return None
 
 PLACEHOLDER_LEADS = [
@@ -202,15 +235,10 @@ class handler(BaseHTTPRequestHandler):
                 user_token = params.get('token', [''])[0].strip()
 
             is_live = False
-            if user_token:
-                # 1. SHA-256 Hash doğrulaması (Tek yönlü kriptografik kontrol)
-                user_hash = hashlib.sha256(user_token.encode('utf-8')).hexdigest()
-                if hmac.compare_digest(user_hash.encode('utf-8'), AUTH_KEY_HASH.encode('utf-8')):
-                    is_live = True
-                
-                # 2. Vercel ortam değişkeni varsa onunla da doğrula
-                secret_token = os.environ.get("STUDIO_SECRET_TOKEN") or SECRET_ACCESS_TOKEN
-                if secret_token and hmac.compare_digest(user_token.encode('utf-8'), secret_token.encode('utf-8')):
+            secret_token = os.environ.get("STUDIO_SECRET_TOKEN") or SECRET_ACCESS_TOKEN
+            if user_token and secret_token:
+                # Sabit zamanlı güvenli karşılaştırma (Timing Attack Koruması)
+                if hmac.compare_digest(user_token.encode('utf-8'), secret_token.strip().encode('utf-8')):
                     is_live = True
 
             if is_live:

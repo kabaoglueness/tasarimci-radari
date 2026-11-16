@@ -1,15 +1,14 @@
-# StudioFinder — Vercel Serverless & Güvenlik Sıkılaştırma Planı
+# StudioFinder — Güvenlik Açıklarını Kapatma ve Sıkılaştırma Planı (v2.0)
 
-- [x] Faz 1: Vercel Deploy Yapılandırması (`.vercelignore`, `pyproject.toml`, `vercel.json`)
-  - [x] `server.py`, `android/`, `tests/` Vercel build sürecinden hariç tutulması
-  - [x] `pyproject.toml` ile Vercel Python runtime entrypoint (`api.search-real:handler`) tanımlanması
-  - [x] `vercel.json` temizlenmesi ve statik/sunucusuz rota ayarlarının yapılması
-- [x] Faz 2: Güvenlik Açıklarının Kapatılması (SECURITY_AUDIT.md)
-  - [x] Kritik: `api/search-real.py` fallback gizli anahtarının silinmesi ve `hmac.compare_digest` ile timing-attack koruması
-  - [x] Yüksek: `server.py` HTTP 'latin-1' başlık kodlama çökmesinin (`X-Last-Sync`) URL-encode ile giderilmesi
-  - [x] Yüksek: `src/app.js` DOM XSS açıklarının `escapeHtml` ve `sanitizeUrl` ile filtrelenmesi
-  - [x] Orta: `server.py` SQLite WAL modu (`PRAGMA journal_mode=WAL;`) ve busy timeout eklenmesi
-  - [x] Orta: Android Manifest ve Capacitor `cleartext` ve `allowBackup` sıkılaştırması
-  - [x] Düşük: `data/leads.json` PII (telefon/e-posta) maskelenmesi
-- [x] Faz 3: Otomasyon ve Güvenlik Testleri Doğrulaması (`tests/test_security_and_api.py`)
-- [x] Faz 4: GitHub `main` Dalına Commit & Push
+- [x] Faz 1: `api/search_real.py` Güvenlik Sıkılaştırması
+  - [x] `AUTH_KEY_HASH` sabitini sil ve kimlik doğrulamayı sadece `STUDIO_SECRET_TOKEN` ortam değişkenine bağla (`hmac.compare_digest`).
+  - [x] `resolve_safe_static_path` içindeki path prefix açığını `os.path.commonpath` ve dosya uzantısı/kara liste denetimi ile kapat.
+- [x] Faz 2: Canlı Dağıtım İfşa Koruması (`.vercelignore`)
+  - [x] `SECURITY_AUDIT.md`, `*.md`, `docs/`, `package.json`, `pyproject.toml` dosyalarını ekle.
+- [x] Faz 3: Canlı HTTP Güvenlik Başlıkları (`vercel.json`)
+  - [x] `Content-Security-Policy`, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy` ve `Permissions-Policy` başlıklarını tanımla.
+- [x] Faz 4: İstemci Token İletimi ve PII Temizliği (`src/app.js` & `data/leads.json`)
+  - [x] `src/app.js`: URL `&token=...` parametresini kaldır, sadece `Authorization: Bearer` ve `X-Access-Token` başlıklarını gönder.
+  - [x] `data/leads.json`: Açık telefon/e-posta verilerini maskele / mock veriye çevir.
+- [x] Faz 5: Testlerin ve Doğrulamanın Yapılması (`tests/test_security_and_api.py`)
+  - [x] Yeni güvenlik kontrolleri için unit testleri güncelle ve çalıştır (21 testin tümü geçti).
