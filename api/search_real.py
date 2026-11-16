@@ -8,12 +8,16 @@ Kök yolda ("/") ve statik yollarda index.html ve web bileşenlerini sunar.
 """
 
 from http.server import BaseHTTPRequestHandler
+import hashlib
 import hmac
 import json
 import os
 import re
 import urllib.parse
 import urllib.request
+
+# Kullanıcıya özel kriptografik SHA-256 erişim hash'i (Düz metin şifre kodda bulunmaz)
+AUTH_KEY_HASH = "f24fbff3259435331edbea7d72d0842b1e1bccaaef9b886ce0a44a15721380c3"
 
 # Vercel Panelinden tanımlanacak gizli anahtar (Varsayılan yoksa yetkisiz sayılır)
 SECRET_ACCESS_TOKEN = os.environ.get("STUDIO_SECRET_TOKEN")
@@ -198,9 +202,15 @@ class handler(BaseHTTPRequestHandler):
                 user_token = params.get('token', [''])[0].strip()
 
             is_live = False
-            secret_token = os.environ.get("STUDIO_SECRET_TOKEN") or SECRET_ACCESS_TOKEN
-            if secret_token and user_token:
-                if hmac.compare_digest(user_token.encode('utf-8'), secret_token.encode('utf-8')):
+            if user_token:
+                # 1. SHA-256 Hash doğrulaması (Tek yönlü kriptografik kontrol)
+                user_hash = hashlib.sha256(user_token.encode('utf-8')).hexdigest()
+                if hmac.compare_digest(user_hash.encode('utf-8'), AUTH_KEY_HASH.encode('utf-8')):
+                    is_live = True
+                
+                # 2. Vercel ortam değişkeni varsa onunla da doğrula
+                secret_token = os.environ.get("STUDIO_SECRET_TOKEN") or SECRET_ACCESS_TOKEN
+                if secret_token and hmac.compare_digest(user_token.encode('utf-8'), secret_token.encode('utf-8')):
                     is_live = True
 
             if is_live:

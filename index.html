@@ -224,35 +224,30 @@
 
   </div>
 
-  <!-- SUNUCU & MOBİL BAĞLANTI AYARLARI MODALI (GitHub Sürümünde Güvenli Yerel Bağlantı) -->
+  <!-- APİ ERİŞİM ANAHTARI MODALI -->
   <div id="settings-modal" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs hidden items-center justify-center p-4">
     <div class="bg-white border border-borderSubtle rounded-2xl shadow-xl w-full max-w-sm p-5 flex flex-col gap-4 animate-in fade-in zoom-in-95 duration-150">
       <div class="flex items-center justify-between border-b border-borderSubtle pb-3">
         <div class="flex items-center gap-2">
           <div class="w-6 h-6 rounded bg-zinc-900 text-white flex items-center justify-center text-xs font-bold">API</div>
-          <h3 class="font-bold text-sm text-zinc-900">Bağlantı Ayarları</h3>
+          <h3 class="font-bold text-sm text-zinc-900">API Anahtarı</h3>
         </div>
         <button id="close-settings-btn" class="text-fg-faint hover:text-zinc-900 text-sm font-semibold p-1">✕</button>
       </div>
 
-      <p class="text-xs text-fg-muted leading-relaxed">
-        Vercel'de canlı LinkedIn iş fırsatlarının kilidini açmak için Vercel panelinde (Settings &gt; Environment Variables) tanımladığınız <strong>STUDIO_SECRET_TOKEN</strong> şifrenizi girin:
-      </p>
-
       <div class="flex flex-col gap-1.5">
-        <label class="text-[11px] font-semibold text-zinc-700">Özel Canlı Erişim Kodu (Secret Token):</label>
+        <label class="text-[11px] font-semibold text-zinc-700">API Anahtarınız:</label>
         <input 
           id="secret-token-input" 
           type="password" 
-          placeholder="Örn: kreatif2026"
+          placeholder="API anahtarınızı yapıştırın..."
           class="w-full bg-canvas border border-borderSubtle rounded-lg px-3 py-2 text-xs text-zinc-900 focus:outline-none focus:border-zinc-400 focus:bg-white transition-all font-mono"
         />
-        <span class="text-[10px] text-fg-faint">Bu şifre Vercel ortam değişkeniyle eşleştiğinde canlı LinkedIn motorunu tetikler.</span>
       </div>
 
       <div class="flex items-center gap-2 pt-2 border-t border-borderSubtle">
         <button id="save-settings-btn" class="flex-1 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-semibold transition-all active:scale-[0.98]">
-          Kaydet & Yenile
+          Kaydet
         </button>
         <button id="reset-settings-btn" class="px-3 py-2 rounded-lg border border-borderSubtle bg-canvas hover:bg-canvasSubtle text-fg-muted text-xs font-medium transition-all">
           Sıfırla
