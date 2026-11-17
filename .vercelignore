@@ -3,26 +3,17 @@
 server.py
 start.bat
 
-# Native / Android build files
-android/
-
 # Tests & Test Artefacts
 tests/
 
-# Build artifacts & dependencies
-dist/
-node_modules/
+# Build artifacts & databases
 data/radar.db
 
-# Documentation & Sensitive Info (Information Disclosure Koruması)
+# Documentation & Audit
 SECURITY_AUDIT.md
 *.md
 docs/
 package.json
-package-lock.json
-pyproject.toml
-.vercelignore
-.gitignore
 
 # Environment secrets
 .env*
