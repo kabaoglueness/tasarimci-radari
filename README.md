@@ -166,4 +166,4 @@ python -m unittest tests/test_security_and_api.py
 
 ## Lisans
 
-MIT Lisansı ile korunmaktadır.
+Bu proje **GNU Affero General Public License v3.0 (AGPL-3.0-or-later)** ile lisanslanmıştır. Detaylar için [LICENSE](LICENSE) dosyasına göz atabilirsiniz.
